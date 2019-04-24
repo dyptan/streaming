@@ -77,11 +77,6 @@ public class ESclient {
         selected.show();
         System.out.println("Count is: "+selected.count());
 
-//        StreamingQuery query = cars.writeStream()
-//                .outputMode("append")
-//                .format("console")
-//                .option("truncate", false)
-//                .start();
 
         Dataset<Row> labelDF = selected.withColumnRenamed("price_usd", "label");
 
@@ -142,7 +137,6 @@ public class ESclient {
                 from_json(
                         col("value").cast("string"), RSS_SCHEMA)
                         .alias("olx"))
-//                .where("olx.price_usd>8000")
                 .select("olx.*");
 
         Dataset<Row> streamPredictionsDF = pipelineModel.transform(carsStream);
