@@ -141,9 +141,9 @@ public class ESclient {
 
         Dataset<Row> filteredDf = streamPredictionsDF.drop("features");
 
-//        StreamingQuery query = filteredDf.writeStream().outputMode("append").format("console").start();
-
-        StreamingQuery query = filteredDf.writeStream().foreachBatch(
+        StreamingQuery query = filteredDf.writeStream()
+//                .outputMode("append").format("console")
+                .foreachBatch(
                 (VoidFunction2<Dataset<Row>, Long>) (records, batchId) -> {
                     logger.warning(records.showString(10, 15, false));
                     MongoSpark.save(records);
