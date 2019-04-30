@@ -3,17 +3,15 @@ import org.apache.spark.api.java.function.VoidFunction2;
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.ml.PipelineStage;
-import org.apache.spark.ml.evaluation.RegressionEvaluator;
 import org.apache.spark.ml.feature.Imputer;
 import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.ml.regression.LinearRegression;
-import org.apache.spark.sql.Row;
 import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQuery;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.types.StructType;
-import org.elasticsearch.spark.sql.api.java.JavaEsSparkSQL;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,7 +56,6 @@ public class ESclient {
 
         Map<String, String> myconfig = new HashMap<String, String>();
         myconfig.put("es.read.field.as.array.include", "tags");
-//        myconfig.put("es.read.field.as.array.include", "model");
 
         SparkSession spark = SparkSession
                 .builder()
@@ -71,7 +68,6 @@ public class ESclient {
         spark.sparkContext().setLogLevel("WARN");
 
         Dataset<Row> cars = spark.read().format("org.elasticsearch.spark.sql").options(myconfig).schema(STATIC_RSS_SCHEMA).load("cars3/cars");
-//        cars.printSchema();
 
         Dataset<Row> selected = cars.select("category", "model","price_usd","engine_cubic_cm","race_km","year","published");
 //        selected.show();
@@ -131,7 +127,6 @@ public class ESclient {
                 .option("startingOffsets", "earliest")
                 .load();
 
-//Generate a result table.
         final Dataset<Row> rawCarsStream = ads.select(
                 from_json(
                         col("value").cast("string"), STREAMING_RSS_SCHEMA)
@@ -149,12 +144,9 @@ public class ESclient {
 //        StreamingQuery query = filteredDf.writeStream().outputMode("append").format("console").start();
 
         StreamingQuery query = filteredDf.writeStream().foreachBatch(
-                new VoidFunction2<Dataset<Row>, Long>(){
-
-                    public void call(Dataset<Row> records, Long batchId) throws Exception {
-                        logger.warning(records.showString(10, 15, false));
-                        MongoSpark.save(records);
-                    }
+                (VoidFunction2<Dataset<Row>, Long>) (records, batchId) -> {
+                    logger.warning(records.showString(10, 15, false));
+                    MongoSpark.save(records);
                 }
         ).start();
 
