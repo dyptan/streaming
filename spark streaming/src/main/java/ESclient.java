@@ -60,19 +60,6 @@ public class ESclient {
         Dataset<Row> cars = spark.read().format("org.elasticsearch.spark.sql").options(myconfig).schema(RSS_SCHEMA).load("cars3/cars");
         cars.printSchema();
 
-//        Dataset<Row> cars = JavaEsSparkSQL.esDF(spark, "olxua/cars",  "{\n" +
-////                "    \"_source\": {\"excludes\": \"tags\"}," +
-//                "    \"sort\" :" +
-//                "        { \"published\" : {\"order\" : \"asc\"}},\n" +
-//                "    \n" +
-//                "    \"size\" : 1,"+
-//                "    \"query\" : {\n" +
-//                "        \"match_all\" : {}\n" +
-//                "    }\n" +
-//                "}"
-////                , myconfig
-//        );
-
         Dataset<Row> selected = cars.select("category", "model","price_usd","engine_cubic_cm","race_km","year","published");
         selected.show();
         System.out.println("Count is: "+selected.count());
