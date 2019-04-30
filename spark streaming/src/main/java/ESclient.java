@@ -27,7 +27,7 @@ public class ESclient {
     private static final Logger logger = Logger.getLogger(ESclient.class.getName());
 
 
-    private static StructType RSS_SCHEMA = new StructType()
+    private static StructType STATIC_RSS_SCHEMA = new StructType()
             .add("link", StringType, true)
             .add("@timestamp", TimestampType, true)
             .add("model", StringType, true)
@@ -36,6 +36,19 @@ public class ESclient {
             .add("year", DoubleType, true)
             .add("category", StringType, true)
             .add("engine_cubic_cm", DoubleType, true)
+            .add("message", StringType, true)
+            .add("title", StringType, true)
+            .add("published", TimestampType, true);
+
+    private static StructType STREAMING_RSS_SCHEMA = new StructType()
+            .add("link", StringType, true)
+            .add("@timestamp", TimestampType, true)
+            .add("model", StringType, true)
+            .add("price_usd", StringType, true)
+            .add("race_km", StringType, true)
+            .add("year", StringType, true)
+            .add("category", StringType, true)
+            .add("engine_cubic_cm", StringType, true)
             .add("message", StringType, true)
             .add("title", StringType, true)
             .add("published", TimestampType, true);
@@ -55,25 +68,24 @@ public class ESclient {
                 .config("spark.mongodb.output.uri", "mongodb://localhost/olx.cars")
                 .getOrCreate();
 
-        spark.sparkContext().setLogLevel("ERROR");
+        spark.sparkContext().setLogLevel("WARN");
 
-        Dataset<Row> cars = spark.read().format("org.elasticsearch.spark.sql").options(myconfig).schema(RSS_SCHEMA).load("cars3/cars");
-        cars.printSchema();
+        Dataset<Row> cars = spark.read().format("org.elasticsearch.spark.sql").options(myconfig).schema(STATIC_RSS_SCHEMA).load("cars3/cars");
+//        cars.printSchema();
 
         Dataset<Row> selected = cars.select("category", "model","price_usd","engine_cubic_cm","race_km","year","published");
-        selected.show();
-        System.out.println("Count is: "+selected.count());
-
+//        selected.show();
+//        System.out.println("Count is: "+selected.count());
 
         Dataset<Row> labelDF = selected.withColumnRenamed("price_usd", "label");
 
         Imputer imputer = new Imputer()
                 // .setMissingValue(1.0d)
                 .setInputCols(new String[] { "engine_cubic_cm", "race_km","year" })
-                .setOutputCols(new String[] { "~engine_cubic_cm~", "~race_km~","~year~" });
+                .setOutputCols(new String[] { "engine_cubic_cm", "race_km","year" });
 
         VectorAssembler assembler = new VectorAssembler()
-                .setInputCols(new String[] { "~engine_cubic_cm~","~race_km~","~year~" })
+                .setInputCols(new String[] { "engine_cubic_cm","race_km","year" })
                 .setOutputCol("features");
 
         // Choosing a Model
@@ -88,14 +100,14 @@ public class ESclient {
         Dataset<Row>[] splitDF = labelDF.randomSplit(new double[] { 0.8, 0.2 });
 
         Dataset<Row> trainDF = splitDF[0];
-        Dataset<Row> evaluationDF = splitDF[1];
+//        Dataset<Row> evaluationDF = splitDF[1];
 
         PipelineModel pipelineModel = pipeline.fit(trainDF);
 
         // Evaluation
-        Dataset<Row> predictionsDF = pipelineModel.transform(evaluationDF);
-
-        predictionsDF.show(false);
+//        Dataset<Row> predictionsDF = pipelineModel.transform(evaluationDF);
+//
+//        predictionsDF.show(false);
 
 //        Dataset<Row> forEvaluationDF = predictionsDF.select("label",
 //                "prediction");
@@ -115,26 +127,32 @@ public class ESclient {
                 .readStream()
                 .format("kafka")
                 .option("kafka.bootstrap.servers", "localhost:9092")
-                .option("subscribe", "olx2")
+                .option("subscribe", "olx")
                 .option("startingOffsets", "earliest")
                 .load();
 
 //Generate a result table.
-        final Dataset<Row> carsStream = ads.select(
+        final Dataset<Row> rawCarsStream = ads.select(
                 from_json(
-                        col("value").cast("string"), RSS_SCHEMA)
+                        col("value").cast("string"), STREAMING_RSS_SCHEMA)
                         .alias("olx"))
                 .select("olx.*");
 
-        Dataset<Row> streamPredictionsDF = pipelineModel.transform(carsStream);
+        Dataset<Row> structuredCarsStream = rawCarsStream.select(col("year").cast(DoubleType),
+                col("category"),
+                col("engine_cubic_cm").cast(DoubleType), col("race_km").cast(DoubleType));
+
+        Dataset<Row> streamPredictionsDF = pipelineModel.transform(structuredCarsStream);
 
         Dataset<Row> filteredDf = streamPredictionsDF.drop("features");
 
+//        StreamingQuery query = filteredDf.writeStream().outputMode("append").format("console").start();
 
         StreamingQuery query = filteredDf.writeStream().foreachBatch(
                 new VoidFunction2<Dataset<Row>, Long>(){
 
                     public void call(Dataset<Row> records, Long batchId) throws Exception {
+                        logger.warning(records.showString(10, 15, false));
                         MongoSpark.save(records);
                     }
                 }
