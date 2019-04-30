@@ -20,12 +20,12 @@
 
     <modules>
         <module>kafka.streaming</module>
-        <module>spark streaming</module>
+        <module>spark.streaming</module>
+        <module>reactive.web</module>
     </modules>
 
     <dependencies>
-        <!-- Spring DI for all modules -->
-               <!-- unit test -->
+        <!-- Stream parent dependencies -->
     </dependencies>
 
     <build>
