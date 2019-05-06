@@ -17,7 +17,7 @@
 
 
 <dependencies>
-    <dependency>
+        <dependency>
         <groupId>org.apache.spark</groupId>
         <artifactId>spark-sql_2.11</artifactId>
         <version>${spark.version}</version>
