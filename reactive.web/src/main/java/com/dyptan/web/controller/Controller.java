@@ -10,12 +10,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
+import java.io.IOException;
+
 
 @RestController
 public class Controller {
     private final ReactiveMongoTemplate mongoTemplate;
+    private final ModelTrainer trainer = new ModelTrainer();
 
-    public Controller(ReactiveMongoTemplate mongoTemplate) {
+    public Controller(ReactiveMongoTemplate mongoTemplate) throws IOException {
         this.mongoTemplate = mongoTemplate;
     }
 
@@ -29,11 +32,12 @@ public class Controller {
 
     @PostMapping("/trainModel")
     public void train(){
+        trainer.train();
+    }
 
-        ModelTrainer trainer = new ModelTrainer();
-                trainer.train();
-        trainer.save("here");
-
+    @PostMapping("/saveModel")
+    public void save(){
+        trainer.save();
     }
 
 }
