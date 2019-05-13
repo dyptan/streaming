@@ -70,10 +70,6 @@ public class ModelTrainer {
         sparkConf = new SparkConf();
         sparkConf.setAll(JavaConversions.mapAsScalaMap(scalaProps));
 
-//        logger.warning("SparkConf content: "+Arrays.stream(sparkConf.getAll()).collect( Collectors.toList() ).toString());
-//        logger.warning("Scala Prop cont: "+Arrays.asList(scalaProps));
-//        logger.warning("Java prop content: "+Arrays.asList(prop).toString());
-
     }
 
     public void train() {
@@ -93,7 +89,7 @@ public class ModelTrainer {
 
         Dataset<Row> selected = cars.select("category", "price_usd","engine_cubic_cm","race_km", "model", "year","published");
         logger.info("Pre-transformed data sample: \n"+selected.showString(10, 10, false));
-        logger.info("Rows in train data set: "+selected.count());
+        logger.info("Rows count in train data set: "+selected.count());
 
         Dataset<Row> labelDF = selected.withColumnRenamed("price_usd", "label");
 
