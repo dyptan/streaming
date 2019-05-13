@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>stream-multi-modules</artifactId>
-        <groupId>ua.org.kodaky.multi</groupId>
+        <artifactId>parent</artifactId>
+        <groupId>com.dyptan</groupId>
         <version>1.0</version>
     </parent>
 
-    <groupId>ua.org.kodaky.spark</groupId>
+    <groupId>com.dyptan</groupId>
     <artifactId>streaming.spark</artifactId>
     <packaging>jar</packaging>
     <version>1.1-SNAPSHOT</version>

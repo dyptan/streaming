@@ -1,4 +1,4 @@
-package streaming.spark;
+package com.dyptan.streaming.spark;
 
 import com.mongodb.spark.MongoSpark;
 import org.apache.spark.api.java.function.VoidFunction2;
@@ -22,7 +22,7 @@ public class StreamTransformer {
     private static StructType STREAMING_RSS_SCHEMA = new StructType()
             .add("link", StringType, true)
             .add("@timestamp", TimestampType, true)
-            .add("model", StringType, true)
+            .add("com.dyptan.web.model", StringType, true)
             .add("price_usd", StringType, true)
             .add("race_km", StringType, true)
             .add("year", StringType, true)

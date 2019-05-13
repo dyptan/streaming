@@ -1,11 +1,11 @@
-package model;
+package com.dyptan.web.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(
     collection = "cars"
 )
-public class Model {
+public class Car {
     private String model;
     private Double price_usd;
     private Double race_km;

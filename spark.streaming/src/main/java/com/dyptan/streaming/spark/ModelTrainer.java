@@ -1,4 +1,4 @@
-package streaming.spark;
+package com.dyptan.streaming.spark;
 
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
@@ -27,7 +27,7 @@ public class ModelTrainer {
 //    private static StructType STATIC_RSS_SCHEMA = new StructType()
 //            .add("link", StringType, true)
 //            .add("@timestamp", TimestampType, true)
-//            .add("model", StringType, true)
+//            .add("com.dyptan.web.model", StringType, true)
 //            .add("price_usd", DoubleType, true)
 //            .add("race_km", DoubleType, true)
 //            .add("year", DoubleType, true)
@@ -42,7 +42,7 @@ public class ModelTrainer {
 
     {
         SPARK_CONFIG.put("es.read.field.as.array.include","tags");
-        SPARK_CONFIG.put("es.read.field.as.array.include","model");
+        SPARK_CONFIG.put("es.read.field.as.array.include","com.dyptan.web.model");
         SPARK_CONFIG.put("es.nodes","localhost");
         SPARK_CONFIG.put("es.port","9200");
     }
@@ -73,7 +73,7 @@ public class ModelTrainer {
 //                .schema(STATIC_RSS_SCHEMA)
                 .load(ELASTIC_TYPE);
 
-        Dataset<Row> selected = cars.select("category", "price_usd","engine_cubic_cm","race_km", "model", "year","published");
+        Dataset<Row> selected = cars.select("category", "price_usd","engine_cubic_cm","race_km", "com.dyptan.web.model", "year","published");
 //        selected.show();
 //        System.out.println("Count is: "+selected.count());
 
@@ -123,10 +123,12 @@ public class ModelTrainer {
         logger.warning("R2 =" + r2);
         logger.warning("RMSE =" + rmse);
         logger.warning("---------------------------");
+
+        spark.cloneSession();
     }
 
     public void save(String MODEL_PATH){
-        //Saving model to disk
+        //Saving com.dyptan.web.model to disk
         try {
             pipelineModel.write().overwrite().save(MODEL_PATH);
             logger.warning("Model successfully saved.");
