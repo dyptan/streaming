@@ -11,22 +11,15 @@ import org.apache.spark.ml.regression.LinearRegression;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import scala.Tuple2;
 import scala.collection.JavaConversions;
-import scala.collection.JavaConversions.*;
-import scala.collection.Traversable;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 enum TRAINER_SETTINGS {
     ELASTIC_TYPE,
@@ -49,7 +42,7 @@ public class ModelTrainer {
     }
 
     public final String ELASTIC_TYPE = "cars3/cars";
-    public String MODEL_PATH = "trainedModel";
+    public String MODEL_PATH = ".trainedModel";
 
     public PipelineModel pipelineModel = null;
 
