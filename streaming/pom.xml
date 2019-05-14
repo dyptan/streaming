@@ -16,54 +16,57 @@
     <version>1.1-SNAPSHOT</version>
 
 
-<dependencies>
+    <dependencies>
 
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-test</artifactId>
-        <version>RELEASE</version>
-        <scope>test</scope>
-    </dependency>
-
+        <!--Tests deps-->
         <dependency>
-        <groupId>org.apache.spark</groupId>
-        <artifactId>spark-sql_2.11</artifactId>
-        <version>${spark.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.spark</groupId>
-        <artifactId>spark-streaming-kafka-0-10_2.11</artifactId>
-        <version>${spark.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.spark</groupId>
-        <artifactId>spark-sql-kafka-0-10_2.11</artifactId>
-        <version>${spark.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.mongodb.spark</groupId>
-        <artifactId>mongo-spark-connector_2.11</artifactId>
-        <version>${spark.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.elasticsearch</groupId>
-        <artifactId>elasticsearch-hadoop</artifactId>
-        <version>6.2.4</version>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.spark</groupId>
-        <artifactId>spark-mllib_2.11</artifactId>
-        <version>${spark.version}</version>
-    </dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
 
-</dependencies>
+        <!--Spark deps-->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_2.11</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming-kafka-0-10_2.11</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql-kafka-0-10_2.11</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb.spark</groupId>
+            <artifactId>mongo-spark-connector_2.11</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-mllib_2.11</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+
+        <!--Other deps-->
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch-hadoop</artifactId>
+            <version>6.2.4</version>
+        </dependency>
+    </dependencies>
 
     <!--<repositories>-->
-        <!--<repository> <id>mapr-releases</id>-->
-            <!--<url>http://repository.mapr.com/maven/</url>-->
-            <!--<snapshots><enabled>true</enabled></snapshots>-->
-            <!--<releases><enabled>true</enabled></releases>-->
-        <!--</repository>-->
+    <!--<repository> <id>mapr-releases</id>-->
+    <!--<url>http://repository.mapr.com/maven/</url>-->
+    <!--<snapshots><enabled>true</enabled></snapshots>-->
+    <!--<releases><enabled>true</enabled></releases>-->
+    <!--</repository>-->
     <!--</repositories>-->
 
 </project>

@@ -10,6 +10,12 @@
     <packaging>pom</packaging>
     <version>1.0</version>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>LATEST</version>
+        <relativePath/>
+    </parent>
 
 
     <properties>
@@ -20,12 +26,14 @@
     </properties>
 
     <modules>
-        <module>web.static</module>
+        <module>web</module>
         <module>streaming</module>
-        <module>web.reactive</module>
+        <!--<module>web.reactive</module>-->
     </modules>
 
     <dependencies>
+
+
 
     </dependencies>
 
