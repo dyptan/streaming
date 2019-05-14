@@ -11,12 +11,20 @@
     </parent>
 
     <groupId>com.dyptan</groupId>
-    <artifactId>streaming.spark</artifactId>
+    <artifactId>streaming</artifactId>
     <packaging>jar</packaging>
     <version>1.1-SNAPSHOT</version>
 
 
 <dependencies>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <version>RELEASE</version>
+        <scope>test</scope>
+    </dependency>
+
         <dependency>
         <groupId>org.apache.spark</groupId>
         <artifactId>spark-sql_2.11</artifactId>

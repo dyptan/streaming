@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>
+    function delUser(name) {
+        $.ajax({
+        url: "/user/"+name,
+        type: 'DELETE',
+        success: function(){
+            $(".users").empty()
+            loadUsers()
+            }
+        });
+    }
+
+    function loadUsers() {
+        $.ajax({
+            url: "/users"
+        }).then(function(data) {
+            $.each(data, function(i, users) {
+                $('<input>').attr({
+                    type: 'radio',
+                    id: i
+                }).appendTo('.users').after("User: "+users.name+
+                "<button onclick='delUser(\""+users.name+"\")'>delete</button><br>");
+            });
+        })
+    };
+
+    $(document).ready(loadUsers());
+
+</script>
+<head>
+    <meta charset="UTF-8">
+    <title>Manage users</title>
+</head>
+<body>
+<form class="users">
+</form>
+</body>
+</html>

@@ -10,8 +10,9 @@
     <packaging>pom</packaging>
     <version>1.0</version>
 
+
+
     <properties>
-        <!-- https://maven.apache.org/general.html#encoding-warning -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -19,19 +20,13 @@
     </properties>
 
     <modules>
-        <module>kafka.streaming</module>
-        <module>spark.streaming</module>
-        <module>reactive.web</module>
+        <module>web.static</module>
+        <module>streaming</module>
+        <module>web.reactive</module>
     </modules>
 
     <dependencies>
-        <!-- Stream parent dependencies -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <version>RELEASE</version>
-            <scope>test</scope>
-        </dependency>
+
     </dependencies>
 
     <!--<build>-->
