@@ -1,4 +1,4 @@
-import com.dyptan.streaming.spark.ModelTrainer;
+import com.dyptan.ModelTrainer;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,4 +15,6 @@ public class TrainerTest {
         ModelTrainer modelTrainer = new ModelTrainer();
         Assert.assertThat(Arrays.stream(modelTrainer.sparkConf.getAll()).collect( Collectors.toList() ).toString(), containsString("spark."));
     }
+
+
 }

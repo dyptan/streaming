@@ -1,4 +1,4 @@
-package com.dyptan.streaming.spark;
+package com.dyptan;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.ml.Pipeline;
@@ -13,7 +13,6 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import scala.collection.JavaConversions;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -51,7 +50,7 @@ public class ModelTrainer {
         return this;
     }
 
-    public ModelTrainer() throws FileNotFoundException, IOException {
+    public ModelTrainer() throws IOException {
         InputStream is = getClass().getClassLoader()
                 .getResourceAsStream("spark-defaults.properties");
         Properties prop = new Properties();

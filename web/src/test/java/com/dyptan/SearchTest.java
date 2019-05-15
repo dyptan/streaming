@@ -107,7 +107,7 @@ public class SearchTest {
 
     @Test
     public void getAllData(){
-        SearchHit[] data = search.getAllHits(new SearchRequest("olx_test"));
+        SearchHit[] data = search.getAllHits(new SearchRequest("cars3"));
         Arrays.stream(data)
                 .map(x->x.getSourceAsString())
                 .limit(5)
@@ -129,11 +129,11 @@ public class SearchTest {
         SearchResponse response = null;
 
         try {
-            response = connector.getClient().search(new SearchRequest("olx_test"));
+            response = connector.getClient().search(new SearchRequest("cars3"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(response.getHits().getHits());
+        System.out.println("All hits: "+response.getHits().getHits().length);
     }
 }
 

@@ -1,4 +1,4 @@
-package com.dyptan.streaming.spark;
+package com.dyptan;
 
 import com.mongodb.spark.MongoSpark;
 import org.apache.spark.api.java.function.VoidFunction2;

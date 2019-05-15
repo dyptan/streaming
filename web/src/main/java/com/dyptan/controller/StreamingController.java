@@ -1,7 +1,7 @@
 package com.dyptan.controller;
 
 import com.dyptan.model.Car;
-import com.dyptan.streaming.spark.ModelTrainer;
+import com.dyptan.ModelTrainer;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.GetMapping;
