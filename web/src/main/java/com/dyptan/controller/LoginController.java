@@ -56,6 +56,11 @@ public class LoginController {
         return "login";
         }
 
+        @GetMapping("/stream")
+    public String stream() {
+        return "stream";
+        }
+
     @GetMapping("/admin")
     public String admin() {
         return "admin";

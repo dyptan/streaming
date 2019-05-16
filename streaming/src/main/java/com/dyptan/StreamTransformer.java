@@ -17,28 +17,37 @@ import static org.apache.spark.sql.functions.from_json;
 import static org.apache.spark.sql.types.DataTypes.*;
 
 public class StreamTransformer {
-    private static final Logger logger = Logger.getLogger(StreamTransformer.class.getName());
+    final static Logger logger = Logger.getLogger(StreamTransformer.class.getName());
 
-    private static StructType STREAMING_RSS_SCHEMA = new StructType()
-            .add("link", StringType, true)
-            .add("@timestamp", TimestampType, true)
-            .add("com.dyptan.web.model", StringType, true)
-            .add("price_usd", StringType, true)
-            .add("race_km", StringType, true)
-            .add("year", StringType, true)
-            .add("category", StringType, true)
-            .add("engine_cubic_cm", StringType, true)
-            .add("message", StringType, true)
-            .add("title", StringType, true)
-            .add("published", TimestampType, true);
+    private StructType STREAMING_RSS_SCHEMA = null;
+    private String MONGO_COLLECTION = null;
+    private String KAFKA_BOOTSTRAP_SERVER = null;
+    private String KAFKA_TOPIC = null;
+    private String MODEL_PATH = null;
+    public StreamingQuery query = null;
 
-    public static final String MONGO_COLLECTION = "localhost/olx.cars";
-    public static final String KAFKA_BOOTSTRAP_SERVER = "localhost:9092";
-    public static final String KAFKA_TOPIC = "olx";
-    public static final String MODEL_PATH = "trainedModel";
+    public StreamTransformer() {
+                STREAMING_RSS_SCHEMA = new StructType()
+                .add("link", StringType, true)
+                .add("@timestamp", TimestampType, true)
+                .add("model", StringType, true)
+                .add("price_usd", StringType, true)
+                .add("race_km", StringType, true)
+                .add("year", StringType, true)
+                .add("category", StringType, true)
+                .add("engine_cubic_cm", StringType, true)
+                .add("message", StringType, true)
+                .add("title", StringType, true)
+                .add("published", TimestampType, true);
 
+        MONGO_COLLECTION = "localhost/olx.cars";
+        KAFKA_BOOTSTRAP_SERVER = "localhost:9092";
+        KAFKA_TOPIC = "olx";
+        MODEL_PATH = ".trainedModel";
 
-    public static void readStreamAndTransform() throws StreamingQueryException {
+    }
+
+    public void readStreamAndTransform() throws StreamingQueryException {
 
 
         SparkSession spark = SparkSession
@@ -68,6 +77,8 @@ public class StreamTransformer {
         Dataset<Row> structuredStream = parsedStream.select(
                 col("year").cast(DoubleType),
                 col("category"),
+                col("price_usd"),
+//                col("model"),
                 col("engine_cubic_cm").cast(DoubleType),
                 col("race_km").cast(DoubleType));
 
@@ -77,7 +88,7 @@ public class StreamTransformer {
 
         Dataset<Row> filteredDf = streamPredictionsDF.drop("features");
 
-        StreamingQuery query = filteredDf.writeStream()
+        query = filteredDf.writeStream()
 //                .outputMode("append").format("console")
                 .foreachBatch(
                 (VoidFunction2<Dataset<Row>, Long>) (records, batchId) -> {

@@ -30,12 +30,12 @@ public class StreamingController {
         return this.mongoTemplate.tail(new Query(), Car.class).share();
     }
 
-    @PostMapping("/trainModel")
+    @GetMapping("/trainModel")
     public void train(){
         trainer.train();
     }
 
-    @PostMapping("/saveModel")
+    @GetMapping("/saveModel")
     public void save(){
         trainer.save();
     }

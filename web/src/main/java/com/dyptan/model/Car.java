@@ -1,10 +1,12 @@
 package com.dyptan.model;
 
+import lombok.Getter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(
     collection = "cars"
 )
+@Getter
 public class Car {
     private String model;
     private Double price_usd;
