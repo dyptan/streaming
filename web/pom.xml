@@ -81,7 +81,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>RELEASE</version>
+            <version>LATEST</version>
         </dependency>
 
         <dependency>

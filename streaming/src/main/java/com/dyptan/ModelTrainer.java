@@ -135,12 +135,12 @@ public class ModelTrainer {
         spark.cloneSession();
     }
 
-    public void save(){
+    public void save() {
         //Saving com.dyptan.web.model to disk
         try {
             pipelineModel.write().overwrite().save(MODEL_PATH);
             logger.warning("Model successfully saved.");
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
