@@ -19,16 +19,15 @@ public class TrainerTest {
     }
 
     @Test
-    public void runTransformer() throws StreamingQueryException {
-        StreamTransformer transformer = new StreamTransformer();
-        transformer.readStreamAndTransform();
-    }
-
-    @Test
     public void runModelTrainer() throws IOException {
         ModelTrainer modelTrainer = new ModelTrainer();
         modelTrainer.train();
         modelTrainer.save();
     }
 
+    @Test
+    public void runTransformer() throws StreamingQueryException {
+        StreamTransformer transformer = new StreamTransformer();
+        transformer.readStreamAndTransform();
+    }
 }

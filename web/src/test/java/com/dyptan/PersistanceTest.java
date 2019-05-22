@@ -4,7 +4,6 @@ import com.dyptan.model.Filter;
 import com.dyptan.model.User;
 import com.dyptan.repository.UserRepository;
 import com.dyptan.service.SearchService;
-import com.dyptan.util.Period;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,7 +43,7 @@ public class PersistanceTest {
         filter.setBrands("Opel");
         filter.setYearTo((short)2018);
         filter.setPeriodRange(3);
-        filter.setPeriodMultiplier(Period.WEEKS);
+        filter.setPeriodMultiplier(Filter.Period.WEEKS);
 
         user.addFilter(filter);
 

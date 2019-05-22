@@ -40,7 +40,7 @@ public class LoginController {
     @PostMapping("/login")
     public String doPost(@RequestParam(name="userName", required=false, defaultValue="Guest") String userName, Model model, HttpSession session) {
         if (userRepository.existsByName(userName)) {
-            model.addAttribute("filters", userRepository.findByName(userName).get().getFilters());
+//            model.addAttribute("filters", userRepository.findByName(userName).get().);
             model.addAttribute("brands", service.getBrands());
             model.addAttribute("userName", userName);
             session.setAttribute("userName", userName);
@@ -56,7 +56,7 @@ public class LoginController {
         return "login";
         }
 
-        @GetMapping("/stream")
+    @GetMapping("/stream")
     public String stream() {
         return "stream";
         }
@@ -80,6 +80,7 @@ public class LoginController {
         List<Map<String, Object>> documents = service.getHitsAsList(filter);
 
         log.fine("Docs found : "+documents.size()+"\n Content is: "+documents);
+
         model.addAttribute("documents", documents);
         model.addAttribute("brands", service.getBrands());
         model.addAttribute("userName", session.getAttribute("userName").toString());

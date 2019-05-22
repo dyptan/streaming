@@ -19,42 +19,47 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-enum TRAINER_SETTINGS {
-    ELASTIC_TYPE,
-    MODEL_PATH
-}
+//enum TRAINER_SETTINGS {
+//    ELASTIC_TYPE,
+//    MODEL_PATH
+//}
 
 public class ModelTrainer {
     private static final Logger logger = Logger.getLogger(ModelTrainer.class.getName());
-    public SparkConf sparkConf = null;
+
+    public SparkConf sparkConf = null;//    just for testing
     private PipelineModel pipelineModel = null;
     private SparkSession spark = null;
+    private Properties prop = null;
 
-    public static Map<String, String> ES_CONFIG = new HashMap<String, String>();
-    public static Map<TRAINER_SETTINGS, String> TRAINER_CONFIG = new HashMap<TRAINER_SETTINGS, String>();
+//    Map<TRAINER_SETTINGS, String> TRAINER_CONFIG = new HashMap<TRAINER_SETTINGS, String>();
 
-    {
-        ES_CONFIG.put("es.read.field.as.array.include","tags");
-        ES_CONFIG.put("es.read.field.as.array.include","com.dyptan.web.model");
-        ES_CONFIG.put("es.nodes","localhost");
-        ES_CONFIG.put("es.port","9200");
-    }
+    Map<String, String> ES_CONFIG = new HashMap<String, String>();
 
-    public final String ELASTIC_TYPE = "cars3/cars";
-    public String MODEL_PATH = ".trainedModel";
+//    public String MODEL_PATH = ".trainedModel";
+//    {
+//        ES_CONFIG.put("es.read.field.as.array.include","tags");
+////        ES_CONFIG.put("es.read.field.as.array.include","com.dyptan.web.model");
+//        ES_CONFIG.put("es.nodes","localhost");
+//        ES_CONFIG.put("es.port","9200");
+//    }
 
+//    public final String ELASTIC_TYPE = "olx/cars";
 
-
-    public ModelTrainer set(TRAINER_SETTINGS setting, String value) {
-        TRAINER_CONFIG.put(setting, value);
-        return this;
-    }
+//    public ModelTrainer set(TRAINER_SETTINGS setting, String value) {
+//        TRAINER_CONFIG.put(setting, value);
+//        return this;
+//    }
 
     public ModelTrainer() throws IOException {
-        InputStream is = getClass().getClassLoader()
+
+//        Spark config section
+
+        InputStream sparkDefaults = getClass().getClassLoader()
                 .getResourceAsStream("spark-defaults.properties");
-        Properties prop = new Properties();
-        prop.load(is);
+
+        prop = new Properties();
+        prop.load(sparkDefaults);
 
         Map<String, String> scalaProps = new HashMap<>();
         scalaProps.putAll((Map)prop);
@@ -64,26 +69,37 @@ public class ModelTrainer {
 
         spark = SparkSession
                 .builder()
-                .master("local[*]")
                 .appName("ReadFromElasticAndTrainModel")
                 .config(sparkConf)
                 .getOrCreate();
 
         spark.sparkContext().setLogLevel("ERROR");
 
+
+//        ES config section
+
+        InputStream elasticProperties = getClass().getClassLoader()
+                .getResourceAsStream("trainer.properties");
+
+        prop.load(elasticProperties);
+        ES_CONFIG.putAll((Map)prop);
+
     }
 
     public void train() {
 
+
         Dataset<Row> cars = spark.read().format("org.elasticsearch.spark.sql").options(ES_CONFIG)
                 .option("inferSchema", true)
-                .load(ELASTIC_TYPE);
+                .load();
+
+        logger.warning(cars.schema().mkString());
 
         Dataset<Row> selected = cars.select("category", "price_usd","engine_cubic_cm","race_km",
-//                "model",
+                "model",
                 "year","published").limit(100);
-//        logger.info("Pre-transformed data sample: \n"+selected.showString(10, 10, false));
-//        logger.info("Rows count in train data set: "+selected.count());
+        logger.info("Pre-transformed data sample: \n"+selected.showString(10, 10, false));
+        logger.info("Rows count in train data set: "+selected.count());
 
         Dataset<Row> labelDF = selected.withColumnRenamed("price_usd", "label");
 
@@ -138,7 +154,8 @@ public class ModelTrainer {
     public void save() {
         //Saving com.dyptan.web.model to disk
         try {
-            pipelineModel.write().overwrite().save(MODEL_PATH);
+            logger.warning("Saving to "+ES_CONFIG.getOrDefault("model.path", ".trainedModel"));
+            pipelineModel.write().overwrite().save(ES_CONFIG.getOrDefault("model.path", ".trainedModel"));
             logger.warning("Model successfully saved.");
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,14 +1,12 @@
 package com.dyptan.model;
 
-import com.dyptan.util.Period;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.persistence.*;
-import java.util.Arrays;
+import javax.persistence.Embeddable;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Data
 @Embeddable
@@ -33,4 +31,20 @@ public class Filter {
             return e.getMessage();
         }
     }
+
+    public enum Period{
+        DAYS ("d"),
+        WEEKS("w"),
+        MONTHS("M");
+
+        private final String abbreviation;
+
+        Period(String abbreviation){
+            this.abbreviation = abbreviation;
+        }
+
+        public String getAbbreviation() {return abbreviation;}
+    }
 }
+
+

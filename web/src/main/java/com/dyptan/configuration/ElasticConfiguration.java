@@ -13,4 +13,5 @@ public class ElasticConfiguration {
         private String host;
         private String index;
         private short port;
+        private String type;
 }

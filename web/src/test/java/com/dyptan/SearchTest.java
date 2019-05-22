@@ -3,7 +3,6 @@ package com.dyptan;
 import com.dyptan.connector.SearchConnector;
 import com.dyptan.model.Filter;
 import com.dyptan.service.SearchService;
-import com.dyptan.util.Period;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
@@ -43,7 +42,7 @@ public class SearchTest {
         filter.setLimit(Short.valueOf("100"));
         filter.setBrands("Dadi");
         filter.setPeriodRange(1);
-        filter.setPeriodMultiplier(Period.WEEKS);
+        filter.setPeriodMultiplier(Filter.Period.WEEKS);
         return filter;
     }
 

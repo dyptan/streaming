@@ -15,4 +15,5 @@ public class Car {
     private String category;
     private Double engine_cubic_cm;
     private Double prediction;
+    private String published;
 }

@@ -1,6 +1,7 @@
 package com.dyptan;
 
 import com.mongodb.spark.MongoSpark;
+import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.function.VoidFunction2;
 import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.sql.Dataset;
@@ -9,7 +10,13 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQuery;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.types.StructType;
+import scala.collection.JavaConversions;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import static org.apache.spark.sql.functions.col;
@@ -19,31 +26,53 @@ import static org.apache.spark.sql.types.DataTypes.*;
 public class StreamTransformer {
     final static Logger logger = Logger.getLogger(StreamTransformer.class.getName());
 
-    private StructType STREAMING_RSS_SCHEMA = null;
-    private String MONGO_COLLECTION = null;
+    private final StructType STREAMING_RSS_SCHEMA = new StructType()
+            .add("link", StringType, true)
+            .add("@timestamp", TimestampType, true)
+            .add("model", StringType, true)
+            .add("price_usd", StringType, true)
+            .add("race_km", StringType, true)
+            .add("year", StringType, true)
+            .add("category", StringType, true)
+            .add("engine_cubic_cm", StringType, true)
+            .add("message", StringType, true)
+            .add("title", StringType, true)
+            .add("published", TimestampType, true);
+
     private String KAFKA_BOOTSTRAP_SERVER = null;
     private String KAFKA_TOPIC = null;
     private String MODEL_PATH = null;
+    private Properties STREAM_CONFIG = null;
+    private SparkConf sparkConf = null;
     public StreamingQuery query = null;
 
     public StreamTransformer() {
-                STREAMING_RSS_SCHEMA = new StructType()
-                .add("link", StringType, true)
-                .add("@timestamp", TimestampType, true)
-                .add("model", StringType, true)
-                .add("price_usd", StringType, true)
-                .add("race_km", StringType, true)
-                .add("year", StringType, true)
-                .add("category", StringType, true)
-                .add("engine_cubic_cm", StringType, true)
-                .add("message", StringType, true)
-                .add("title", StringType, true)
-                .add("published", TimestampType, true);
 
-        MONGO_COLLECTION = "localhost/olx.cars";
-        KAFKA_BOOTSTRAP_SERVER = "localhost:9092";
-        KAFKA_TOPIC = "olx";
-        MODEL_PATH = ".trainedModel";
+//      Loading up Stream properties
+
+        InputStream sparkDefaults = getClass().getClassLoader()
+                .getResourceAsStream("streaming.properties");
+
+        STREAM_CONFIG = new Properties();
+        try {
+            STREAM_CONFIG.load(sparkDefaults);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+//      Setting up Stream properties
+
+        KAFKA_BOOTSTRAP_SERVER = STREAM_CONFIG.getProperty("source.kafka.bootstrap.server", "localhost:9092");
+        KAFKA_TOPIC = STREAM_CONFIG.getProperty("source.kafka.topic", "olx");
+        MODEL_PATH = STREAM_CONFIG.getProperty("model.load.path", ".trainedModel");
+
+//      Converting Java Properties to SparkConf
+
+        Map<String, String> scalaProps = new HashMap<>();
+        scalaProps.putAll((Map)STREAM_CONFIG);
+
+        sparkConf = new SparkConf();
+        sparkConf.setAll(JavaConversions.mapAsScalaMap(scalaProps));
 
     }
 
@@ -52,10 +81,8 @@ public class StreamTransformer {
 
         SparkSession spark = SparkSession
                 .builder()
-                .master("local[*]")
-                .appName("JavaStructuredNetworkWordCount")
-                .config("spark.driver.bindAddress", "localhost")
-                .config("spark.mongodb.output.uri", "mongodb://"+ MONGO_COLLECTION)
+                .appName("StreamingApplication")
+                .config(sparkConf)
                 .getOrCreate();
 
         spark.sparkContext().setLogLevel("WARN");
@@ -78,9 +105,11 @@ public class StreamTransformer {
                 col("year").cast(DoubleType),
                 col("category"),
                 col("price_usd"),
-//                col("model"),
+                col("model"),
                 col("engine_cubic_cm").cast(DoubleType),
-                col("race_km").cast(DoubleType));
+                col("race_km").cast(DoubleType),
+                col("published")
+        );
 
         PipelineModel pipelineModel = PipelineModel.load(MODEL_PATH);
 
