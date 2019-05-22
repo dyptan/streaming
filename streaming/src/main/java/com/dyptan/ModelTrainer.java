@@ -4,6 +4,7 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.ml.PipelineStage;
+import org.apache.spark.ml.evaluation.RegressionEvaluator;
 import org.apache.spark.ml.feature.Imputer;
 import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.ml.regression.LinearRegression;
@@ -19,46 +20,27 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-//enum TRAINER_SETTINGS {
-//    ELASTIC_TYPE,
-//    MODEL_PATH
-//}
-
 public class ModelTrainer {
     private static final Logger logger = Logger.getLogger(ModelTrainer.class.getName());
 
     public SparkConf sparkConf = null;//    just for testing
     private PipelineModel pipelineModel = null;
     private SparkSession spark = null;
-    private Properties prop = null;
+    private Map<String, String> ES_CONFIG = new HashMap<String, String>();
+    private String MODEL_PATH = null;
+    private Dataset<Row>[] splitDF = null;
 
-//    Map<TRAINER_SETTINGS, String> TRAINER_CONFIG = new HashMap<TRAINER_SETTINGS, String>();
-
-    Map<String, String> ES_CONFIG = new HashMap<String, String>();
-
-//    public String MODEL_PATH = ".trainedModel";
-//    {
-//        ES_CONFIG.put("es.read.field.as.array.include","tags");
-////        ES_CONFIG.put("es.read.field.as.array.include","com.dyptan.web.model");
-//        ES_CONFIG.put("es.nodes","localhost");
-//        ES_CONFIG.put("es.port","9200");
-//    }
-
-//    public final String ELASTIC_TYPE = "olx/cars";
-
-//    public ModelTrainer set(TRAINER_SETTINGS setting, String value) {
-//        TRAINER_CONFIG.put(setting, value);
-//        return this;
-//    }
+    {
+        MODEL_PATH = ES_CONFIG.getOrDefault("model.path", ".trainedModel");
+    }
 
     public ModelTrainer() throws IOException {
-
 //        Spark config section
 
         InputStream sparkDefaults = getClass().getClassLoader()
                 .getResourceAsStream("spark-defaults.properties");
 
-        prop = new Properties();
+        Properties prop = new Properties();
         prop.load(sparkDefaults);
 
         Map<String, String> scalaProps = new HashMap<>();
@@ -72,9 +54,7 @@ public class ModelTrainer {
                 .appName("ReadFromElasticAndTrainModel")
                 .config(sparkConf)
                 .getOrCreate();
-
         spark.sparkContext().setLogLevel("ERROR");
-
 
 //        ES config section
 
@@ -95,9 +75,16 @@ public class ModelTrainer {
 
         logger.warning(cars.schema().mkString());
 
-        Dataset<Row> selected = cars.select("category", "price_usd","engine_cubic_cm","race_km",
+        Dataset<Row> selected = cars.select(
+                "category",
+                "price_usd",
+                "engine_cubic_cm",
+                "race_km",
                 "model",
-                "year","published").limit(100);
+                "year",
+                "published")
+                .limit(100);
+
         logger.info("Pre-transformed data sample: \n"+selected.showString(10, 10, false));
         logger.info("Rows count in train data set: "+selected.count());
 
@@ -114,7 +101,7 @@ public class ModelTrainer {
 
         // Choosing a Model
         LinearRegression linearRegression = new LinearRegression();
-        linearRegression.setMaxIter(100);
+        linearRegression.setMaxIter(1000);
 
         Pipeline pipeline = new Pipeline()
                 .setStages(new PipelineStage[] {
@@ -122,40 +109,44 @@ public class ModelTrainer {
                 });
 
         // Splitting train and evaluating data
-        Dataset<Row>[] splitDF = labelDF.randomSplit(new double[] { 0.8, 0.2 });
+
+        splitDF = labelDF.randomSplit(new double[] { 0.8, 0.2 });
 
         Dataset<Row> trainDF = splitDF[0];
-//        Dataset<Row> evaluationDF = splitDF[1];
 
         pipelineModel = pipeline.fit(trainDF);
-
-        // Evaluation itself
-//        Dataset<Row> predictionsDF = pipelineModel.transform(evaluationDF);
-//
-////        predictionsDF.show(false);
-//
-//        Dataset<Row> forEvaluationDF = predictionsDF.select("label",
-//                "prediction");
-//
-//        RegressionEvaluator evaluteR2 = new RegressionEvaluator().setMetricName("r2");
-//        RegressionEvaluator evaluteRMSE = new RegressionEvaluator().setMetricName("rmse");
-//
-//        double r2 = evaluteR2.evaluate(forEvaluationDF);
-//        double rmse = evaluteRMSE.evaluate(forEvaluationDF);
-//
-//        logger.warning("---------------------------");
-//        logger.warning("R2 =" + r2);
-//        logger.warning("RMSE =" + rmse);
-//        logger.warning("---------------------------");
 
         spark.cloneSession();
     }
 
+    public void evaluate(){
+
+        Dataset<Row> evaluationDF = splitDF[1];
+
+        Dataset<Row> predictionsDF = pipelineModel.transform(evaluationDF);
+
+        logger.info("Transformed data with predictions: \n"+predictionsDF.showString(10, 10, false));
+
+        Dataset<Row> forEvaluationDF = predictionsDF.select("label", "prediction");
+
+        RegressionEvaluator evaluteR2 = new RegressionEvaluator().setMetricName("r2");
+        RegressionEvaluator evaluteRMSE = new RegressionEvaluator().setMetricName("rmse");
+
+        double r2 = evaluteR2.evaluate(forEvaluationDF);
+        double rmse = evaluteRMSE.evaluate(forEvaluationDF);
+
+        logger.warning("---------------------------");
+        logger.warning("R2 =" + r2);
+        logger.warning("RMSE =" + rmse);
+        logger.warning("---------------------------");
+    }
+
     public void save() {
-        //Saving com.dyptan.web.model to disk
+        //Saving model to disk
         try {
-            logger.warning("Saving to "+ES_CONFIG.getOrDefault("model.path", ".trainedModel"));
-            pipelineModel.write().overwrite().save(ES_CONFIG.getOrDefault("model.path", ".trainedModel"));
+            logger.warning("Saving to "+MODEL_PATH);
+            pipelineModel.write().overwrite().save(MODEL_PATH);
+
             logger.warning("Model successfully saved.");
         } catch (Exception e) {
             e.printStackTrace();
