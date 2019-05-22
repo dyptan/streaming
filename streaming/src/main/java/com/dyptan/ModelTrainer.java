@@ -23,9 +23,8 @@ import java.util.logging.Logger;
 public class ModelTrainer {
     private static final Logger logger = Logger.getLogger(ModelTrainer.class.getName());
 
-    public SparkConf sparkConf = null;//    just for testing
     private PipelineModel pipelineModel = null;
-    private SparkSession spark = null;
+    public SparkSession spark = null;
     private Map<String, String> ES_CONFIG = new HashMap<String, String>();
     private String MODEL_PATH = null;
     private Dataset<Row>[] splitDF = null;
@@ -35,8 +34,7 @@ public class ModelTrainer {
     }
 
     public ModelTrainer() throws IOException {
-//        Spark config section
-
+//      Spark config and init
         InputStream sparkDefaults = getClass().getClassLoader()
                 .getResourceAsStream("spark-defaults.properties");
 
@@ -46,7 +44,7 @@ public class ModelTrainer {
         Map<String, String> scalaProps = new HashMap<>();
         scalaProps.putAll((Map)prop);
 
-        sparkConf = new SparkConf();
+        SparkConf sparkConf = new SparkConf();
         sparkConf.setAll(JavaConversions.mapAsScalaMap(scalaProps));
 
         spark = SparkSession
@@ -56,8 +54,7 @@ public class ModelTrainer {
                 .getOrCreate();
         spark.sparkContext().setLogLevel("ERROR");
 
-//        ES config section
-
+//      ES config section
         InputStream elasticProperties = getClass().getClassLoader()
                 .getResourceAsStream("trainer.properties");
 
@@ -67,8 +64,6 @@ public class ModelTrainer {
     }
 
     public void train() {
-
-
         Dataset<Row> cars = spark.read().format("org.elasticsearch.spark.sql").options(ES_CONFIG)
                 .option("inferSchema", true)
                 .load();
@@ -116,7 +111,6 @@ public class ModelTrainer {
 
         pipelineModel = pipeline.fit(trainDF);
 
-        spark.cloneSession();
     }
 
     public void evaluate(){

@@ -8,7 +8,6 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQuery;
-import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.types.StructType;
 import scala.collection.JavaConversions;
 
@@ -42,8 +41,7 @@ public class StreamTransformer implements  Runnable{
     private String KAFKA_BOOTSTRAP_SERVER = null;
     private String KAFKA_TOPIC = null;
     private String MODEL_PATH = null;
-    private Properties STREAM_CONFIG = null;
-    private SparkConf sparkConf = null;
+    private SparkSession spark = null;
     public StreamingQuery query = null;
 
     public StreamTransformer() {
@@ -53,7 +51,7 @@ public class StreamTransformer implements  Runnable{
         InputStream sparkDefaults = getClass().getClassLoader()
                 .getResourceAsStream("streaming.properties");
 
-        STREAM_CONFIG = new Properties();
+        Properties STREAM_CONFIG = new Properties();
         try {
             STREAM_CONFIG.load(sparkDefaults);
         } catch (IOException e) {
@@ -71,16 +69,10 @@ public class StreamTransformer implements  Runnable{
         Map<String, String> scalaProps = new HashMap<>();
         scalaProps.putAll((Map)STREAM_CONFIG);
 
-        sparkConf = new SparkConf();
+        SparkConf sparkConf = new SparkConf();
         sparkConf.setAll(JavaConversions.mapAsScalaMap(scalaProps));
 
-    }
-
-    @Override
-    public void run() {
-
-
-        SparkSession spark = SparkSession
+        spark = SparkSession
                 .builder()
                 .appName("StreamingApplication")
                 .config(sparkConf)
@@ -88,6 +80,11 @@ public class StreamTransformer implements  Runnable{
 
         spark.sparkContext().setLogLevel("WARN");
 
+    }
+
+    @Override
+    public void run() {
+//      Start reading data from source
         Dataset<Row> rawKafkaStream = spark
                 .readStream()
                 .format("kafka")
@@ -96,12 +93,13 @@ public class StreamTransformer implements  Runnable{
                 .option("startingOffsets", "earliest")
                 .load();
 
-        final Dataset<Row> parsedStream = rawKafkaStream.select(
+        Dataset<Row> parsedStream = rawKafkaStream.select(
                 from_json(
                         col("value").cast("string"), STREAMING_RSS_SCHEMA)
                         .alias("unbounded_table"))
                 .select("unbounded_table.*");
 
+//      Augmenting stream data with types
         Dataset<Row> structuredStream = parsedStream.select(
                 col("year").cast(DoubleType),
                 col("category"),
