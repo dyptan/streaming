@@ -23,7 +23,7 @@ import static org.apache.spark.sql.functions.col;
 import static org.apache.spark.sql.functions.from_json;
 import static org.apache.spark.sql.types.DataTypes.*;
 
-public class StreamTransformer {
+public class StreamTransformer implements  Runnable{
     final static Logger logger = Logger.getLogger(StreamTransformer.class.getName());
 
     private final StructType STREAMING_RSS_SCHEMA = new StructType()
@@ -76,7 +76,8 @@ public class StreamTransformer {
 
     }
 
-    public void readStreamAndTransform() throws StreamingQueryException {
+    @Override
+    public void run() {
 
 
         SparkSession spark = SparkSession
@@ -126,7 +127,11 @@ public class StreamTransformer {
                 }
         ).start();
 
-        query.awaitTermination();
+        try {
+            query.awaitTermination();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 }

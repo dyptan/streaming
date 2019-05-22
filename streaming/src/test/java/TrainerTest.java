@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import static java.lang.Thread.sleep;
 import static org.hamcrest.CoreMatchers.containsString;
 
 public class TrainerTest {
@@ -26,8 +27,11 @@ public class TrainerTest {
     }
 
     @Test
-    public void runTransformer() throws StreamingQueryException {
+    public void runTransformer() throws InterruptedException {
         StreamTransformer transformer = new StreamTransformer();
-        transformer.readStreamAndTransform();
+        Thread detatchedTransformer = new Thread(transformer);
+        detatchedTransformer.start();
+        sleep(15000);
+        transformer.query.stop();
     }
 }
