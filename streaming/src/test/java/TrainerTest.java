@@ -1,6 +1,5 @@
 import com.dyptan.ModelTrainer;
 import com.dyptan.StreamTransformer;
-import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.junit.Assert;
 import org.junit.Test;
 
