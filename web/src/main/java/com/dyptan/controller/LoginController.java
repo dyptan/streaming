@@ -9,6 +9,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,42 +26,40 @@ import java.util.logging.Logger;
 
 @Controller
 public class LoginController {
-
     Logger log = Logger.getLogger(this.getClass().getName());
 
     @Autowired
     UserRepository userRepository;
-
     @Autowired
     SearchService service;
-
     @Autowired
     private ObjectMapper objectMapper;
 
     @PostMapping("/login")
-    public String doPost(@RequestParam(name="userName", required=false, defaultValue="Guest") String userName, Model model, HttpSession session) {
-        if (userRepository.existsByName(userName)) {
-//            model.addAttribute("filters", userRepository.findByName(userName).get().);
+    public String auth(@RequestParam(name = "userName", required = false, defaultValue = "Guest") String userName, Model model, HttpSession session) {
+        if (userRepository.existsByUsername(userName)) {
+            model.addAttribute("filters", userRepository.findByUsername(userName).get().getFilters());
             model.addAttribute("brands", service.getBrands());
             model.addAttribute("userName", userName);
             session.setAttribute("userName", userName);
-            return "search";
+            return "home";
         } else {
             model.addAttribute("userNotFound", true);
             return "login";
         }
     }
 
-    @GetMapping("/login")
-    public String login() {
-        return "login";
-        }
+//    @GetMapping("/login")
+//    public String login() {
+//        return "login";
+//        }
 
     @GetMapping("/stream")
     public String stream() {
         return "stream";
         }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/admin")
     public String admin() {
         return "admin";
@@ -68,6 +67,11 @@ public class LoginController {
 
     @GetMapping("/signin")
     public String register() { return "signin"; }
+
+    @GetMapping("/search")
+    public String search() {
+        return "search";
+    }
 
     @PostMapping(value = "/search", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String searchWithfilter(@ModelAttribute Filter filter,

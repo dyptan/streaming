@@ -35,7 +35,7 @@ public class PersistanceTest {
     @Test
     public void TestUserPersistance(){
 
-        user.setName("Guest");
+        user.setUsername("Guest");
         user.setPassword("22222");
 
         Filter filter = new Filter();
@@ -53,11 +53,11 @@ public class PersistanceTest {
         user.addFilter(filter2);
 
         userRepository.save(user);
-        Assert.assertEquals("Guest", userRepository.findByName("Guest").get().getName());
+        Assert.assertEquals("Guest", userRepository.findByUsername("Guest").get().getUsername());
     }
 
     @Test
     public void TestFilterPersistance(){
-        Assert.assertEquals(2018, userRepository.findByName("Guest").get().getFilters().get(0).getYearTo());
+        Assert.assertEquals(2018, userRepository.findByUsername("Guest").get().getFilters().get(0).getYearTo());
     }
 }

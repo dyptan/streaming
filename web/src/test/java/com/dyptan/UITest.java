@@ -46,4 +46,9 @@ public class UITest {
                 .andExpect(content().string(containsString("html")))
                 .andReturn().getResponse();
     }
+
+    @Test
+    public void auth() {
+
+    }
 }

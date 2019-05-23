@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+Welcome [[${userName}]]
+Click on available options to proceed:
+
+<a th:href="@{/search}">Static data search</a>
+<a href="trainModel">Train new ML model</a>
+<a href="stream">Read stream with ML predictions</a>
+<a href="login">Logout</a>
+
+</body>
+</html>

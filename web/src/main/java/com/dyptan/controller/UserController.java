@@ -1,11 +1,11 @@
 package com.dyptan.controller;
 
-import com.dyptan.exception.UserNotFoundException;
 import com.dyptan.model.Filter;
 import com.dyptan.model.User;
 import com.dyptan.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,34 +26,34 @@ public class UserController {
 
     @GetMapping("/user/{name}")
     public User getUser(@PathVariable(name="name") String name){
-            return userRepository.findByName(name).orElseThrow(()->new UserNotFoundException(name));
+        return userRepository.findByUsername(name).orElseThrow(() -> new UsernameNotFoundException(name));
     }
 
     @GetMapping("/user/{name}/filters")
     public List<Filter> getAllUserFilters(@PathVariable(name="name") String name){
-            return userRepository.findByName(name)
+        return userRepository.findByUsername(name)
                     .map(user-> user.getFilters())
-                    .orElseThrow(()->new UserNotFoundException(name));
+                .orElseThrow(() -> new UsernameNotFoundException(name));
     }
 
 
     @GetMapping("/user/{name}/filter/{id}")
     public Filter getUserFilterById(@PathVariable(name="name") String name,
                                           @PathVariable(name="id") int filterId){
-        return userRepository.findByName(name)
+        return userRepository.findByUsername(name)
                 .map(user-> user.getFilters().get(filterId))
-                .orElseThrow(()->new UserNotFoundException(name));
+                .orElseThrow(() -> new UsernameNotFoundException(name));
     }
 
     @PostMapping(value = "/users", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public User createUser(@ModelAttribute User newUser) {
-        log.info("user added : "+newUser.getName());
+        log.info("user added : " + newUser.getUsername());
         return userRepository.save(newUser);
     }
 
     @PostMapping(value = "/user/{name}/filters",  consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public User createUserFilter(@PathVariable(name="name") String name, @RequestBody Filter newFilter) {
-        User user = userRepository.findByName(name).orElseThrow(()->new UserNotFoundException(name));
+        User user = userRepository.findByUsername(name).orElseThrow(() -> new UsernameNotFoundException(name));
         user.addFilter(newFilter);
         return userRepository.save(user);
     }
@@ -61,7 +61,7 @@ public class UserController {
 
     @PutMapping("/user/{name}")
     public User updateUser(@RequestBody User newUser, @PathVariable String name){
-        return userRepository.findByName(name)
+        return userRepository.findByUsername(name)
                 .map(
                         user -> {
                             user.setPassword(newUser.getPassword());
@@ -75,7 +75,7 @@ public class UserController {
 
     @DeleteMapping("/user/{name}/filter/{id}")
     public void deleteUserFilter(@PathVariable String name, @PathVariable int id){
-        User user = userRepository.findByName(name).orElseThrow(()->new UserNotFoundException(name));
+        User user = userRepository.findByUsername(name).orElseThrow(() -> new UsernameNotFoundException(name));
         user.deleteFilter(id);
         userRepository.save(user);
     }

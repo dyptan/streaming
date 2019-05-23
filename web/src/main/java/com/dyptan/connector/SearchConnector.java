@@ -13,10 +13,10 @@ import javax.annotation.PostConstruct;
 @Data
 @Component
 public class SearchConnector {
-    private String host;
-    private RestHighLevelClient client;
     @Autowired
     private ElasticConfiguration config;
+    private String host;
+    private RestHighLevelClient client;
 
     @PostConstruct
     public void initClient() {
