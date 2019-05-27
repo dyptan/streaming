@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,7 +20,7 @@ public class User {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Filter> filters = new ArrayList<>();
     @ElementCollection(fetch = FetchType.EAGER)
-    private Set<Role> roles;
+    private Set<Role.Roles> roles = new HashSet();
 
     public User() {
     }
@@ -33,6 +34,10 @@ public class User {
 
     public void addFilter(Filter filter) {
         filters.add(filter);
+    }
+
+    public void addRole(Role.Roles role) {
+        roles.add(role);
     }
     public void deleteFilter(int id) {
         filters.remove(id);

@@ -1,6 +1,7 @@
 package com.dyptan;
 
 import com.dyptan.model.Filter;
+import com.dyptan.model.Role;
 import com.dyptan.model.User;
 import com.dyptan.repository.UserRepository;
 import com.dyptan.service.SearchService;
@@ -10,6 +11,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,8 +39,12 @@ public class PersistanceTest {
     @Test
     public void TestUserPersistance(){
 
-        user.setUsername("Guest");
-        user.setPassword("22222");
+        user.setUsername("admin");
+        user.setPassword("admin");
+        Set roles = new HashSet();
+        roles.add(Role.Roles.ADMIN);
+        roles.add(Role.Roles.USER);
+        user.setRoles(roles);
 
         Filter filter = new Filter();
         filter.setModels("[{Astra}]");
@@ -53,11 +61,11 @@ public class PersistanceTest {
         user.addFilter(filter2);
 
         userRepository.save(user);
-        Assert.assertEquals("Guest", userRepository.findByUsername("Guest").get().getUsername());
+        Assert.assertEquals("admin", userRepository.findByUsername("admin").get().getUsername());
     }
 
     @Test
     public void TestFilterPersistance(){
-        Assert.assertEquals(2018, userRepository.findByUsername("Guest").get().getFilters().get(0).getYearTo());
+        Assert.assertEquals(2018, userRepository.findByUsername("admin").get().getFilters().get(0).getYearTo());
     }
 }
