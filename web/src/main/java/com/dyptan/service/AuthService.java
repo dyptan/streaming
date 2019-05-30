@@ -1,25 +1,33 @@
 package com.dyptan.service;
 
 import com.dyptan.model.User;
-import com.dyptan.model.UserAuthDetails;
+import com.dyptan.model.User.AuthDetails;
 import com.dyptan.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
-public class UserAuthDetailsService implements UserDetailsService {
+public class AuthService implements UserDetailsService {
 
     Logger log = Logger.getLogger(this.getClass().getName());
 
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public void saveEncrypted(User user) {
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -30,6 +38,6 @@ public class UserAuthDetailsService implements UserDetailsService {
         optionalUsers
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
         return optionalUsers
-                .map(UserAuthDetails::new).get();
+                .map(x -> new AuthDetails(x)).get();
     }
 }

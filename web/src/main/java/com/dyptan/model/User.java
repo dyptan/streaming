@@ -1,13 +1,14 @@
 package com.dyptan.model;
 
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 @Entity
@@ -24,7 +25,6 @@ public class User {
 
     public User() {
     }
-
     public User(User user) {
         this.username = user.getUsername();
         this.password = user.getPassword();
@@ -35,12 +35,47 @@ public class User {
     public void addFilter(Filter filter) {
         filters.add(filter);
     }
-
     public void addRole(Role.Roles role) {
         roles.add(role);
     }
     public void deleteFilter(int id) {
         filters.remove(id);
     }
+
+    public static class AuthDetails extends User implements UserDetails {
+
+        public AuthDetails(User user) {
+            super(user);
+        }
+
+        @Override
+        public Collection<? extends GrantedAuthority> getAuthorities() {
+            return getRoles()
+                    .stream()
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getValue()))
+                    .collect(Collectors.toList());
+        }
+
+        @Override
+        public boolean isAccountNonExpired() {
+            return true;
+        }
+
+        @Override
+        public boolean isAccountNonLocked() {
+            return true;
+        }
+
+        @Override
+        public boolean isCredentialsNonExpired() {
+            return true;
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return true;
+        }
+    }
+
 
 }

@@ -3,6 +3,7 @@ package com.dyptan.controller;
 import com.dyptan.model.Filter;
 import com.dyptan.model.User;
 import com.dyptan.repository.UserRepository;
+import com.dyptan.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,6 +19,9 @@ public class UserController {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    AuthService authService;
 
     @GetMapping("/users")
     public List<User> getAllUsers(){
@@ -45,6 +49,7 @@ public class UserController {
                 .orElseThrow(() -> new UsernameNotFoundException(name));
     }
 
+    //TODO registration is now on login controller
     @PostMapping(value = "/users", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public User createUser(@ModelAttribute User newUser) {
         log.info("user added : " + newUser.getUsername());

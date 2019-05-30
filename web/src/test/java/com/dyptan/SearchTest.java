@@ -47,7 +47,7 @@ public class SearchTest {
     }
 
 
-    @Test
+    //    @Test
     public void indexElasticWithFilter() {
         String jsonObject = "{\n" +
                 "  \"@timestamp\": \"2018-10-20T17:41:05.171Z\",\n" +
@@ -63,7 +63,7 @@ public class SearchTest {
                 "  \"engine_cubic_cm\": \"22\"\n" +
                 "}";
 
-        IndexRequest indexRequest = new IndexRequest("cars3", "cars", "1");
+        IndexRequest indexRequest = new IndexRequest("olx", "test", "1");
         indexRequest.source(jsonObject, XContentType.JSON);
 
         IndexResponse response = null;
@@ -79,8 +79,8 @@ public class SearchTest {
         String type = response.getType();
 
         assertEquals("1", id);
-        assertEquals("cars3", index);
-        assertEquals("cars", type);
+        assertEquals("olx", index);
+        assertEquals("test", type);
 
         Filter filter = getDummyFilter();
 
@@ -106,7 +106,7 @@ public class SearchTest {
 
     @Test
     public void getAllData(){
-        SearchHit[] data = search.getAllHits(new SearchRequest("cars3"));
+        SearchHit[] data = search.getAllHits(new SearchRequest("olx"));
         Arrays.stream(data)
                 .map(x->x.getSourceAsString())
                 .limit(5)
@@ -124,11 +124,9 @@ public class SearchTest {
 
     @Test
     public void getAllSearchHits() {
-
         SearchResponse response = null;
-
         try {
-            response = connector.getClient().search(new SearchRequest("cars3"));
+            response = connector.getClient().search(new SearchRequest("olx"));
         } catch (IOException e) {
             e.printStackTrace();
         }

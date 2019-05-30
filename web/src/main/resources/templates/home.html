@@ -6,13 +6,13 @@
     <title>Home</title>
 </head>
 <body>
-Welcome [[${userName}]]
+Welcome [[${userName}]] <br>
 Click on available options to proceed:
 
-<a th:href="@{/search}">Static data search</a>
-<a href="trainModel">Train new ML model</a>
-<a href="stream">Read stream with ML predictions</a>
-<a href="login">Logout</a>
+<div><a th:href="@{/search}">Static data search</a></div>
+<div><a href="trainModel">Train new ML model</a></div>
+<div><a href="stream">Read stream with ML predictions</a></div>
+<div><a href="login?logout">Logout</a></div>
 
 </body>
 </html>

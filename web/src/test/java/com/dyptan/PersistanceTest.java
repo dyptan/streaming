@@ -1,7 +1,7 @@
 package com.dyptan;
 
 import com.dyptan.model.Filter;
-import com.dyptan.model.Role;
+import com.dyptan.model.Role.Roles;
 import com.dyptan.model.User;
 import com.dyptan.repository.UserRepository;
 import com.dyptan.service.SearchService;
@@ -42,8 +42,8 @@ public class PersistanceTest {
         user.setUsername("admin");
         user.setPassword("admin");
         Set roles = new HashSet();
-        roles.add(Role.Roles.ADMIN);
-        roles.add(Role.Roles.USER);
+        roles.add(Roles.ADMIN);
+        roles.add(Roles.USER);
         user.setRoles(roles);
 
         Filter filter = new Filter();

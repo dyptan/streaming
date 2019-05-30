@@ -9,9 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
-@EnableWebSecurity
 @EnableJpaRepositories("com.dyptan.repository")
 @EntityScan("com.dyptan.model")
 @SpringBootApplication
@@ -33,8 +31,5 @@ public class SpringApp
     public SearchRequest searchRequest(){
         return new SearchRequest();
     }
-
-//    @Bean
-//    public UserAuthDetailsService userAuthDetailsService() {return new UserAuthDetailsService();}
 }
 
