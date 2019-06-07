@@ -8,7 +8,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
+import java.io.IOException;
 
 @EnableJpaRepositories("com.dyptan.repository")
 @EntityScan("com.dyptan.model")
@@ -30,6 +33,12 @@ public class SpringApp
     @Bean
     public SearchRequest searchRequest(){
         return new SearchRequest();
+    }
+
+    @Bean
+    @Lazy
+    public ModelTrainer modelTrainer() throws IOException {
+        return new ModelTrainer();
     }
 }
 

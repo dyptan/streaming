@@ -1,6 +1,9 @@
 package com.dyptan.controller;
 
+import com.dyptan.ModelTrainer;
 import com.dyptan.model.Car;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +17,9 @@ import java.io.IOException;
 public class StreamingController {
 
     private final ReactiveMongoTemplate mongoTemplate;
-//    private final ModelTrainer trainer = new ModelTrainer();
+    @Autowired
+    @Lazy
+    private ModelTrainer trainer;
 
     public StreamingController(ReactiveMongoTemplate mongoTemplate) throws IOException {
         this.mongoTemplate = mongoTemplate;
@@ -28,14 +33,14 @@ public class StreamingController {
         return this.mongoTemplate.tail(new Query(), Car.class).share();
     }
 
-//    @GetMapping("/trainModel")
-//    public void train(){
-//        trainer.train();
-//    }
-//
-//    @GetMapping("/saveModel")
-//    public void save(){
-//        trainer.save();
-//    }
+    @GetMapping("/trainModel")
+    public void train() {
+        trainer.train();
+    }
+
+    @GetMapping("/saveModel")
+    public void save() {
+        trainer.save();
+    }
 
 }
