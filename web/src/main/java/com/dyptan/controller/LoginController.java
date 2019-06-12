@@ -7,13 +7,12 @@ import com.dyptan.repository.UserRepository;
 import com.dyptan.service.AuthService;
 import com.dyptan.service.SearchService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,13 +20,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @Controller
 public class LoginController {
@@ -39,7 +35,6 @@ public class LoginController {
     SearchService service;
     @Autowired
     ObjectMapper objectMapper;
-
     @Autowired
     AuthService authService;
 
@@ -80,7 +75,7 @@ public class LoginController {
     }
 
     @GetMapping("/search")
-    public String search(Model model, HttpSession httpSession, UsernamePasswordAuthenticationToken principal) {
+    public String search(Model model, UsernamePasswordAuthenticationToken principal) {
         User user = (User) principal.getPrincipal();
         model.addAttribute("filters", user.getFilters());
         model.addAttribute("brands", service.getBrands());
@@ -91,14 +86,14 @@ public class LoginController {
     @PostMapping(value = "/search", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String searchWithfilter(@ModelAttribute Filter filter,
                                    @RequestParam(name="saveFilter", required=false, defaultValue="false") Boolean saveFilter,
-                                   HttpServletRequest httpRequest,
                                    HttpSession session,
-                                   Model model) {
+                                   Model model,
+                                   UsernamePasswordAuthenticationToken principal) {
 
         log.info("Filter is built: "+filter);
-        List<Map<String, Object>> documents = service.getHitsAsList(filter);
 
-        log.fine("Docs found : "+documents.size()+"\n Content is: "+documents);
+        List<Map<String, Object>> documents = service.getHitsAsList(filter);
+        log.debug("Docs found : " + documents.size() + "\n Content is: " + documents);
 
         model.addAttribute("documents", documents);
         model.addAttribute("brands", service.getBrands());
@@ -106,15 +101,13 @@ public class LoginController {
 
         if (saveFilter) {
 
-            String fooResourceUrl
-                    = String.format("http://%s:%d/user/%s/filters", httpRequest.getServerName(), httpRequest.getServerPort(), session.getAttribute("userName").toString());
-
-            ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-            RestTemplate restTemplate = new RestTemplate(requestFactory);
-
-            HttpEntity<Filter> request = new HttpEntity<>(filter);
-
-            restTemplate.postForEntity(fooResourceUrl, request, String.class);
+            log.info("Saving filter.");
+            User user = userRepository
+                    .findByUsername(session.getAttribute("userName").toString())
+                    .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+            user.addFilter(filter);
+            log.debug("filter added: " + user.getFilters());
+            userRepository.save(user);
         }
 
         return "search";

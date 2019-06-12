@@ -2,6 +2,7 @@ package com.dyptan.model;
 
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.Transient;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -42,6 +43,7 @@ public class User {
         filters.remove(id);
     }
 
+    @Transient
     public static class AuthDetails extends User implements UserDetails {
 
         public AuthDetails(User user) {

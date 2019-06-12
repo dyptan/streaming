@@ -4,13 +4,13 @@ import com.dyptan.model.Filter;
 import com.dyptan.model.User;
 import com.dyptan.repository.UserRepository;
 import com.dyptan.service.AuthService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 @CrossOrigin(origins = "*")
 @RestController

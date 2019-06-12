@@ -3,6 +3,7 @@ package com.dyptan.service;
 import com.dyptan.configuration.ElasticConfiguration;
 import com.dyptan.connector.SearchConnector;
 import com.dyptan.model.Filter;
+import org.apache.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -12,12 +13,12 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,7 +40,7 @@ public class SearchService {
         try { response = client.search(request);
         } catch (IOException e)
         { e.printStackTrace();}
-        log.fine("Hits: "+response.getHits().totalHits);
+        log.debug("Hits: " + response.getHits().totalHits);
         return response.getHits().getHits();
     }
 
@@ -59,7 +60,7 @@ public class SearchService {
                                 .gte("now-"+filter.getPeriodRange()+filter.getPeriodMultiplier().getAbbreviation())
                                 .lt("now"))
                 );
-        log.fine("Search request built: "+searchSourceBuilder.toString());
+        log.debug("Search request built: " + searchSourceBuilder.toString());
         return getAllHits(request.source(searchSourceBuilder.size(1000).sort("published", SortOrder.DESC)));
     }
 
@@ -84,7 +85,7 @@ public class SearchService {
                 .map(x -> x.getSourceAsMap())
                 .map(x -> (String) x.get("category"))
                 .collect(Collectors.toSet());
-        log.fine("Brands available" + brands);
+        log.debug("Brands available" + brands);
         return brands;
     }
 }
