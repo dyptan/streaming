@@ -7,10 +7,13 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 import java.io.IOException;
+import java.net.URL;
 
 
 @RestController
@@ -29,18 +32,22 @@ public class StreamingController {
             value = {"/mongostream"},
             produces = {"text/event-stream"}
     )
-    public Flux<Car> olxCars() {
+    public Flux<Car> stream() {
         return this.mongoTemplate.tail(new Query(), Car.class).share();
     }
 
-    @GetMapping("/trainModel")
-    public void train() {
-        trainer.train();
+    @GetMapping("/model")
+    public String model() {
+        return "model";
     }
 
-    @GetMapping("/saveModel")
-    public void save() {
+    @PostMapping("/model")
+    public String train(
+            @RequestParam(name = "trainingDataSetPath") URL trainingDataSetPath) {
+        trainer.setSource(trainingDataSetPath);
+        trainer.train();
         trainer.save();
+        return "model";
     }
 
 }

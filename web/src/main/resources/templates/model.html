@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Train new model</title>
+</head>
+<body>
+Training dataset location:
+<form action="/model" method="post">
+    <input id="esPath" name="trainingDataSetPath" th:value="
+    ${@elasticConfiguration.getHost()}+':'+${@elasticConfiguration.getPort()}+'/'+
+    ${@elasticConfiguration.getIndex()}+'/'+${@elasticConfiguration.getType()}" type="text"><br>
+    <input type="submit">
+</form>
+</body>
+</html>

@@ -2,7 +2,8 @@
 <html xmlns:th="http://www.w3.org/1999/xhtml">
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script>
+<script th:inline="javascript">
+
     function applySavedFilter(id) {
             $.ajax({
                 url: "/user/[[${userName}]]/filter/"+id

@@ -49,7 +49,7 @@ public class UserController {
                 .orElseThrow(() -> new UsernameNotFoundException(name));
     }
 
-    //TODO registration is now on login controller
+    // Deprecated - registration is now on login controller
     @PostMapping(value = "/users", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public User createUser(@ModelAttribute User newUser) {
         log.info("user added : " + newUser.getUsername());
@@ -65,7 +65,7 @@ public class UserController {
 
 
     @PutMapping("/user/{name}")
-    public User updateUser(@RequestBody User newUser, @PathVariable String name){
+    public User updateUserPassword(@RequestBody User newUser, @PathVariable String name) {
         return userRepository.findByUsername(name)
                 .map(
                         user -> {

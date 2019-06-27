@@ -11,14 +11,16 @@ import org.apache.spark.ml.regression.LinearRegression;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import scala.collection.JavaConversions;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
+
+import static scala.collection.JavaConversions.mapAsScalaMap;
 
 public class ModelTrainer {
     private static final Logger logger = Logger.getLogger(ModelTrainer.class.getName());
@@ -26,11 +28,12 @@ public class ModelTrainer {
     private PipelineModel pipelineModel = null;
     public SparkSession spark = null;
     private Map<String, String> ES_CONFIG = new HashMap<String, String>();
-    private String MODEL_PATH = null;
+    private String MODEL_PATH;
     private Dataset<Row>[] splitDF = null;
-
+    private Properties prop;
     {
         MODEL_PATH = ES_CONFIG.getOrDefault("model.path", ".trainedModel");
+        prop = new Properties();
     }
 
     public ModelTrainer() throws IOException {
@@ -38,14 +41,13 @@ public class ModelTrainer {
         InputStream sparkDefaults = getClass().getClassLoader()
                 .getResourceAsStream("spark-defaults.properties");
 
-        Properties prop = new Properties();
         prop.load(sparkDefaults);
 
         Map<String, String> scalaProps = new HashMap<>();
         scalaProps.putAll((Map)prop);
 
         SparkConf sparkConf = new SparkConf();
-        sparkConf.setAll(JavaConversions.mapAsScalaMap(scalaProps));
+        sparkConf.setAll(mapAsScalaMap(scalaProps));
 
         spark = SparkSession
                 .builder()
@@ -54,13 +56,23 @@ public class ModelTrainer {
                 .getOrCreate();
         spark.sparkContext().setLogLevel("ERROR");
 
-//      ES config section
+        //      load ES default config
         InputStream elasticProperties = getClass().getClassLoader()
                 .getResourceAsStream("trainer.properties");
 
         prop.load(elasticProperties);
         ES_CONFIG.putAll((Map)prop);
 
+    }
+
+    // override default ES config
+    public void setSource(URL source) {
+        Properties properties = new Properties();
+        properties.setProperty("es.nodes", source.getHost());
+        properties.setProperty("es.port", String.valueOf(source.getPort()));
+        properties.setProperty("es.resource", source.getPath());
+
+        ES_CONFIG.putAll((Map) properties);
     }
 
     public void train() {
