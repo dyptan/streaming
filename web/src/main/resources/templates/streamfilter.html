@@ -4,28 +4,34 @@
     <meta charset="UTF-8">
     <title>Filter Stream</title>
 </head>
-<body>
-<form action="/stream" method="post" target="records">
-    Exclude
+<body style="height:100vh">
 
-    Brands:
-    <input id="brands" name="brands" type="text" value="ВАЗ, ГАЗ"><br>
-    Models:
-    <input id="models" name="models" type="text" value="Lanos"><br>
+<div>
+    <form action="/stream" method="post" target="records">
+        Exclude
 
-    Include
+        Brands:
+        <input id="brands" name="brands" type="text" value="ВАЗ, ГАЗ"><br>
+        Models:
+        <input id="models" name="models" type="text" value="Lanos"><br>
 
-    Year: <br>
-    from <input id="yearFrom" name="yearFrom" type="text" value="2000">
-    to <input id="yearTo" name="yearTo" type="text" value="2018"><br>
+        Include
 
-    Price: <br>
-    from <input id="priceFrom" name="priceFrom" type="text" value="0">
-    to <input id="priceTo" name="priceTo" type="text" value="20000"><br>
+        Year: <br>
+        from <input id="yearFrom" name="yearFrom" type="text" value="2000">
+        to <input id="yearTo" name="yearTo" type="text" value="2018"><br>
 
-    <input type="submit" value="Apply filter">
-</form>
-<iframe align="bottom" height="70%" id="iframeId" name="records" src="/stream" width="100%"></iframe>
+        Price: <br>
+        from <input id="priceFrom" name="priceFrom" type="text" value="0">
+        to <input id="priceTo" name="priceTo" type="text" value="20000"><br>
+
+        <input type="submit" value="Apply filter">
+    </form>
+</div>
+
+
+<iframe height="80%" id="iframeId" name="records" src="/stream" width="100%"></iframe>
+
 
 </body>
 </html>
