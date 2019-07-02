@@ -63,10 +63,6 @@ public class LoginController {
         return "redirect:/login";
     }
 
-    @GetMapping("/stream")
-    public String stream() {
-        return "stream";
-        }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/admin")

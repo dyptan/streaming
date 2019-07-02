@@ -103,7 +103,7 @@ public class StreamTransformer implements  Runnable{
         Dataset<Row> structuredStream = parsedStream.select(
                 col("year").cast(DoubleType),
                 col("category"),
-                col("price_usd"),
+                col("price_usd").cast(DoubleType),
                 col("model"),
                 col("engine_cubic_cm").cast(DoubleType),
                 col("race_km").cast(DoubleType),

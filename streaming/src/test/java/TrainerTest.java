@@ -21,7 +21,7 @@ public class TrainerTest {
         StreamTransformer transformer = new StreamTransformer();
         Thread detatchedTransformer = new Thread(transformer);
         detatchedTransformer.start();
-        sleep(15000);
+        sleep(30000);
         transformer.query.stop();
     }
 }

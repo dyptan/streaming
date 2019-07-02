@@ -61,16 +61,20 @@ public class ModelTrainer {
                 .getResourceAsStream("trainer.properties");
 
         prop.load(elasticProperties);
+
         ES_CONFIG.putAll((Map)prop);
 
     }
 
     // override default ES config
-    public void setSource(URL source) {
+    public void setSource(URL source, int limit, int iterations) {
         Properties properties = new Properties();
         properties.setProperty("es.nodes", source.getHost());
         properties.setProperty("es.port", String.valueOf(source.getPort()));
         properties.setProperty("es.resource", source.getPath());
+        //TODO duplicate properties in config file
+        properties.setProperty("ml.source.limit", String.valueOf(limit));
+        properties.setProperty("ml.iterations", String.valueOf(iterations));
 
         ES_CONFIG.putAll((Map) properties);
     }
@@ -80,7 +84,7 @@ public class ModelTrainer {
                 .option("inferSchema", true)
                 .load();
 
-        logger.warning(cars.schema().mkString());
+        logger.info("Source schema: " + cars.schema().treeString());
 
         Dataset<Row> selected = cars.select(
                 "category",
@@ -90,10 +94,10 @@ public class ModelTrainer {
                 "model",
                 "year",
                 "published")
-                .limit(100);
+                .limit(Integer.valueOf(ES_CONFIG.getOrDefault("ml.source.limit", "100")));
 
         logger.info("Pre-transformed data sample: \n"+selected.showString(10, 10, false));
-        logger.info("Rows count in train data set: "+selected.count());
+        logger.info("Train dataset is limited to " + selected.count() + " rows");
 
         Dataset<Row> labelDF = selected.withColumnRenamed("price_usd", "label");
 
@@ -108,7 +112,7 @@ public class ModelTrainer {
 
         // Choosing a Model
         LinearRegression linearRegression = new LinearRegression();
-        linearRegression.setMaxIter(1000);
+        linearRegression.setMaxIter(Integer.valueOf(ES_CONFIG.getOrDefault("ml.iterations", "1000")));
 
         Pipeline pipeline = new Pipeline()
                 .setStages(new PipelineStage[] {
@@ -135,11 +139,11 @@ public class ModelTrainer {
 
         Dataset<Row> forEvaluationDF = predictionsDF.select("label", "prediction");
 
-        RegressionEvaluator evaluteR2 = new RegressionEvaluator().setMetricName("r2");
-        RegressionEvaluator evaluteRMSE = new RegressionEvaluator().setMetricName("rmse");
+        RegressionEvaluator evaluateR2 = new RegressionEvaluator().setMetricName("r2");
+        RegressionEvaluator evaluateRMSE = new RegressionEvaluator().setMetricName("rmse");
 
-        double r2 = evaluteR2.evaluate(forEvaluationDF);
-        double rmse = evaluteRMSE.evaluate(forEvaluationDF);
+        double r2 = evaluateR2.evaluate(forEvaluationDF);
+        double rmse = evaluateRMSE.evaluate(forEvaluationDF);
 
         logger.warning("---------------------------");
         logger.warning("R2 =" + r2);

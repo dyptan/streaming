@@ -6,12 +6,21 @@
     <title>Train new model</title>
 </head>
 <body>
+<a href="/home">Home</a><br>
+
 Training dataset location:
-<form action="/model" method="post">
-    <input id="esPath" name="trainingDataSetPath" th:value="
+<form action="/trainmodel" method="post">
+    <input name="trainingDataSetPath" th:value="'http://'+
     ${@elasticConfiguration.getHost()}+':'+${@elasticConfiguration.getPort()}+'/'+
     ${@elasticConfiguration.getIndex()}+'/'+${@elasticConfiguration.getType()}" type="text"><br>
+    Limit size:
+    <input name="sourceLimit" type="text" value="100"><br>
+    ML Iterations:
+    <input name="MLiterations" type="text" value="1000"><br>
+
     <input type="submit">
 </form>
+
+<p th:if="${modeltrained=='true'}">Model trained and saved!</p>
 </body>
 </html>
