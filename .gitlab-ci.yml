@@ -1,10 +1,10 @@
 include:
-  template: Auto-DevOps.gitlab-ci.yml
+  - template: Auto-DevOps.gitlab-ci.yml
 
 services:
-  name: docker:dind
-  entrypoint: ["env", "-u", "DOCKER_HOST"]
-  command: ["dockerd-entrypoint.sh"]
+  - name: docker:dind
+    entrypoint: ["env", "-u", "DOCKER_HOST"]
+    command: ["dockerd-entrypoint.sh"]
 
 variables:
   DOCKER_HOST: tcp://docker:2375/
