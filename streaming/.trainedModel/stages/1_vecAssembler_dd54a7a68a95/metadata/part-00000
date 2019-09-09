@@ -1,1 +1,0 @@
-{"class":"org.apache.spark.ml.feature.VectorAssembler","timestamp":1567504765688,"sparkVersion":"2.4.0","uid":"vecAssembler_dd54a7a68a95","paramMap":{"outputCol":"features","inputCols":["engine_cubic_cm","race_km","year"]},"defaultParamMap":{"outputCol":"vecAssembler_dd54a7a68a95__output","handleInvalid":"error"}}
