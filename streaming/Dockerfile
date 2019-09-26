@@ -1,4 +1,6 @@
-FROM openjdk:8u111-jdk-alpine
+FROM openjdk:8-jre-slim
 VOLUME /tmp
-ADD target/streaming-1.1-SNAPSHOT-jar-with-dependencies.jar app.jar
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+ADD target/StreamTransformer/lib /libs
+ADD target/StreamTransformer/StreamTransformer.jar app.jar
+ADD entrypoint.sh entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]

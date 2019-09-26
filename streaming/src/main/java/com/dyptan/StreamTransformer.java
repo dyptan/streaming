@@ -60,9 +60,9 @@ public class StreamTransformer implements  Runnable{
 
 //      Setting up Stream properties
 
-        KAFKA_BOOTSTRAP_SERVER = STREAM_CONFIG.getProperty("source.kafka.bootstrap.server", "localhost:9092");
+        KAFKA_BOOTSTRAP_SERVER = STREAM_CONFIG.getProperty("source.kafka.bootstrap.server", "kafka:9092");
         KAFKA_TOPIC = STREAM_CONFIG.getProperty("source.kafka.topic", "olx");
-        MODEL_PATH = STREAM_CONFIG.getProperty("model.load.path", ".trainedModel");
+        MODEL_PATH = STREAM_CONFIG.getProperty("model.load.path", "/tmp/trainedmodel");
 
 //      Converting Java Properties to SparkConf
 

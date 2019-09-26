@@ -96,7 +96,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>com.dyptan.StreamTransformer</mainClass>
+                                    <mainClass>com.dyptan.Main</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
@@ -173,7 +173,7 @@
                                 <manifest>
                                     <addClasspath>true</addClasspath>
                                     <classpathPrefix>lib/</classpathPrefix>
-                                    <mainClass>com.dyptan.StreamTransformer</mainClass>
+                                    <mainClass>com.dyptan.Main</mainClass>
                                 </manifest>
                                 <manifestEntries>
                                     <Class-Path>.</Class-Path>

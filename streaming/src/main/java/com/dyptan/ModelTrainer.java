@@ -30,11 +30,8 @@ public class ModelTrainer {
     private Map<String, String> ES_CONFIG = new HashMap<String, String>();
     private String MODEL_PATH;
     private Dataset<Row>[] splitDF = null;
-    private Properties prop;
-    {
-        MODEL_PATH = ES_CONFIG.getOrDefault("model.path", ".trainedModel");
-        prop = new Properties();
-    }
+    private Properties prop= new Properties();;
+
 
     public ModelTrainer() throws IOException {
 //      Spark config and init
@@ -153,6 +150,8 @@ public class ModelTrainer {
 
     public void save() {
         //Saving model to disk
+        MODEL_PATH = ES_CONFIG.getOrDefault("model.path", "/tmp/trainedmodel");
+
         try {
             logger.warning("Saving to "+MODEL_PATH);
             pipelineModel.write().overwrite().save(MODEL_PATH);
