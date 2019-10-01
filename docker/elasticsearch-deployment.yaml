@@ -1,5 +1,5 @@
-apiVersion: extensions/v1beta1
-kind: Deployment
+apiVersion: apps/v1beta1
+kind: StatefulSet
 metadata:
   annotations:
     kompose.cmd: kompose convert
@@ -45,8 +45,17 @@ spec:
         - mountPath: /usr/share/elasticsearch/data
           name: esdata
       restartPolicy: Always
-      volumes:
-      - name: esdata
-        persistentVolumeClaim:
-          claimName: esdata
+
+    volumeClaimTemplate:
+    - metadata:
+      name: esdata
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: standard
+      # NOTE: You can increase the storage size
+      resources:
+        requests:
+          storage: 10Gi
+
 status: {}
