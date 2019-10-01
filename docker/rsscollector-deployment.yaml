@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.17.0 (a74acad)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: rsscollector
+  name: rsscollector
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: rsscollector
+    spec:
+      containers:
+      - image: diptan/rss_with_config
+        name: rsscollector
+        resources: {}
+      restartPolicy: Always
+status: {}
