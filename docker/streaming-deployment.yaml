@@ -22,12 +22,12 @@ spec:
       - image: diptan/streaming:latest
         name: streaming
         resources: {}
-        volumeMounts:
-        - mountPath: /tmp
-          name: model
+#        volumeMounts:
+#        - mountPath: /tmp
+#          name: model
       restartPolicy: Always
-      volumes:
-      - name: model
-        persistentVolumeClaim:
-          claimName: model
-status: {}
+#      volumes:
+#      - name: model
+#        persistentVolumeClaim:
+#          claimName: model-claim    
+#          readOnly: true

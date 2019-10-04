@@ -18,8 +18,8 @@ public class Filter {
     private String brands ;
     private @Transient Period periodMultiplier ;
     private @Transient int periodRange ;
-    private short yearFrom ;
-    private short yearTo ;
+    private int yearFrom ;
+    private int yearTo ;
     private int priceFrom;
     private int priceTo ;
 

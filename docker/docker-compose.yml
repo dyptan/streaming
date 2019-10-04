@@ -59,16 +59,16 @@ services:
       - 8080:8080
     depends_on:
       - db
-    volumes:
-      - model:/tmp
+    # volumes:
+    #   - model:/tmp
   streaming:
     build: ../streaming
     image: diptan/streaming:latest
     depends_on:
       - kafka
       - mongo
-    volumes:
-      - model:/tmp
+    # volumes:
+    #   - model:/tmp
 
 volumes:
   esdata:

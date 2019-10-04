@@ -12,6 +12,6 @@ import org.springframework.stereotype.Component;
 public class ElasticConfiguration {
         private String host;
         private String index;
-        private short port;
+        private int port;
         private String type;
 }
