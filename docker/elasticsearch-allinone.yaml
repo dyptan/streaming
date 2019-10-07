@@ -1,0 +1,93 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: elasticsearch
+spec:
+  type: LoadBalancer
+  selector:
+    io.kompose.service: elasticsearch
+  ports:
+  - port: 9200
+    targetPort: 9200
+---
+# apiVersion: extensions/v1beta1
+# kind: Ingress
+# metadata:
+#   name: es-ingress
+# spec:
+#   backend:
+#     serviceName: elasticsearch
+#     servicePort: 9200
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.17.0 (a74acad)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: elasticsearch
+  name: elasticsearch
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: elasticsearch
+    spec:
+      # Utilize Init containers to set ulimit, vm-max-map-count, and volume permissions
+      initContainers: 
+      - name: volume-permission
+        image: busybox
+        command:
+        - sh
+        - -c
+        - chown -R 1000:1000 /usr/share/elasticsearch/data
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: es-storage
+          mountPath: /usr/share/elasticsearch/data
+      containers:
+      - env:
+        - name: discovery.type
+          value: single-node
+        image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.4
+        name: elasticsearch
+        ports:
+        - containerPort: 9200
+        volumeMounts:
+        - name: es-storage
+          mountPath: "/usr/share/elasticsearch/data"
+      volumes:
+       - name: es-storage
+         persistentVolumeClaim:
+           claimName: es-claim 
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: es-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-mappings
+spec:
+  template:
+    spec:
+      containers:
+      - name: init-mappings
+        image: diptan/elasticsearch-mapping-init
+      restartPolicy: Never
+  backoffLimit: 2
