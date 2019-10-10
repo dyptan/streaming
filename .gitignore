@@ -3,4 +3,5 @@
 !/.gitlab-ci.yml
 !/.gitignore
 target
+trainedModel
 *.iml

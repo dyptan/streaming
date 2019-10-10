@@ -33,7 +33,7 @@ services:
       - elasticsearch
   rsscollector:
     build: ./logstash/docker
-    image: diptan/rss_with_config
+    image: diptan/rsscollector
   mongo:
     build: ./mongo
     image: diptan/mongo

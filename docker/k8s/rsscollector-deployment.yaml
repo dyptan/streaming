@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rsscollector
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        io.kompose.service: rsscollector
+    spec:
+      containers:
+      - image: diptan/rsscollector
+        name: rsscollector
+      restartPolicy: Always

@@ -1,15 +1,15 @@
-kind: Service
-apiVersion: v1
-metadata:
-  name: elasticsearch
-spec:
-  type: LoadBalancer
-  selector:
-    io.kompose.service: elasticsearch
-  ports:
-  - port: 9200
-    targetPort: 9200
----
+# kind: Service
+# apiVersion: v1
+# metadata:
+#   name: elasticsearch
+# spec:
+#   type: LoadBalancer
+#   selector:
+#     io.kompose.service: elasticsearch
+#   ports:
+#   - port: 9200
+#     targetPort: 9200
+# ---
 # apiVersion: extensions/v1beta1
 # kind: Ingress
 # metadata:

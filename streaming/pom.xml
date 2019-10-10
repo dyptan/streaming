@@ -86,7 +86,7 @@
         <profile>
             <id>stream-jar-with-dependencies</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
             <build>
                 <plugins>
