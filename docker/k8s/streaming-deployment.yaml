@@ -1,33 +1,22 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert
-    kompose.version: 1.17.0 (a74acad)
-  creationTimestamp: null
   labels:
-    io.kompose.service: streaming
+    name: streaming
   name: streaming
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      name: streaming
   strategy:
     type: Recreate
   template:
     metadata:
-      creationTimestamp: null
       labels:
-        io.kompose.service: streaming
+        name: streaming
     spec:
       containers:
       - image: diptan/streaming:latest
         name: streaming
-        resources: {}
-#        volumeMounts:
-#        - mountPath: /tmp
-#          name: model
       restartPolicy: Always
-#      volumes:
-#      - name: model
-#        persistentVolumeClaim:
-#          claimName: model-claim    
-#          readOnly: true

@@ -1,14 +1,14 @@
-# kind: Service
-# apiVersion: v1
-# metadata:
-#   name: elasticsearch
-# spec:
-#   type: LoadBalancer
-#   selector:
-#     io.kompose.service: elasticsearch
-#   ports:
-#   - port: 9200
-#     targetPort: 9200
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+spec:
+  type: LoadBalancer
+  selector:
+    name: elasticsearch
+  ports:
+  - port: 9200
+    targetPort: 9200
 # ---
 # apiVersion: extensions/v1beta1
 # kind: Ingress
@@ -19,24 +19,21 @@
 #     serviceName: elasticsearch
 #     servicePort: 9200
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert
-    kompose.version: 1.17.0 (a74acad)
-  creationTimestamp: null
   labels:
-    io.kompose.service: elasticsearch
+    name: elasticsearch
   name: elasticsearch
 spec:
   replicas: 1
-  strategy: {}
+  selector:
+    matchLabels:
+      name: elasticsearch
   template:
     metadata:
-      creationTimestamp: null
       labels:
-        io.kompose.service: elasticsearch
+        name: elasticsearch
     spec:
       # Utilize Init containers to set ulimit, vm-max-map-count, and volume permissions
       initContainers: 

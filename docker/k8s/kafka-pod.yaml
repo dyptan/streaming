@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: kafka
   labels:
-    io.kompose.service: kafka
+    name: kafka
 spec:
   containers:
   - env:
