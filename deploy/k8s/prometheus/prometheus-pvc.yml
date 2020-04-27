@@ -1,0 +1,14 @@
+# PersistentVolumeClaim for MapR Data Platform
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: maprfs-pvc-prometheus
+  namespace: prometheus
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: maprfs-sc-tmp
+  resources:
+    requests:
+      storage: 300M

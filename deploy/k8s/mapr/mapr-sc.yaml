@@ -1,0 +1,28 @@
+# StorageClass for MapR Data Platform
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+   name: maprfs-sc-tmp
+   namespace: mapr-system
+provisioner: mapr.com/maprfs
+parameters:
+    # Configure below MapR cluster details to reflect your MapR cluster configuration
+    restServers: "192.168.33.19:8443"
+    cldbHosts: "192.168.33.19"
+    cluster: "cyber.mapr.cluster"
+    securityType: "unsecure"
+    maprSecretName: "mapr-provisioner-secrets"
+    maprSecretNamespace: "mapr-system"
+    namePrefix: "tmp"
+    mountPrefix: "/tmp"
+    reclaimPolicy: "Retain"
+    advisoryquota: "100M"
+    auditenabled: "1"
+    forceauditenable: "1"
+    replication: "1"
+    minreplication: "1"
+    nsreplication: "1"
+    nsminreplication: "1"
+    type: "rw"
+    mount: "1"

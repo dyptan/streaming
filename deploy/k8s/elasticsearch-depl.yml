@@ -1,24 +1,3 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: elasticsearch
-spec:
-  type: LoadBalancer
-  selector:
-    name: elasticsearch
-  ports:
-  - port: 9200
-    targetPort: 9200
-# ---
-# apiVersion: extensions/v1beta1
-# kind: Ingress
-# metadata:
-#   name: es-ingress
-# spec:
-#   backend:
-#     serviceName: elasticsearch
-#     servicePort: 9200
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -64,27 +43,3 @@ spec:
          persistentVolumeClaim:
            claimName: es-claim 
       restartPolicy: Always
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: es-claim
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 3Gi
----
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: init-mappings
-spec:
-  template:
-    spec:
-      containers:
-      - name: init-mappings
-        image: diptan/elasticsearch-mapping-init
-      restartPolicy: Never
-  backoffLimit: 2
