@@ -6,4 +6,4 @@
 `kubectl apply prometheus-pvc.yaml`
 
 3. Install Prometheus with Helm charts
-` helm install stable/prometheus --namespace prometheus --name prometheus --values prometheus/values.yml`
+` helm install stable/prometheus --namespace prometheus --name prometheus --values values.yml`
