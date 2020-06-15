@@ -19,7 +19,7 @@
 
     <dependencies>
 
-        <!--Akka-->
+        <!--Akka
         <dependency>
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-stream_2.12</artifactId>
@@ -35,7 +35,7 @@
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-http-spray-json</artifactId>
             <version>3.0.0-RC1</version>
-        </dependency>
+        </dependency-->
 
         <!--Tests deps-->
         <dependency>
