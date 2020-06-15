@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
 import java.io.IOException;
@@ -103,9 +104,16 @@ public class StreamingController {
             @RequestParam(name = "sourceLimit") int limit,
             @RequestParam(name = "MLiterations") int iterations,
             Model model) {
-        trainer.setSource(trainingDataSetPath, limit, iterations);
-        trainer.train();
-        trainer.save();
+        WebClient webclient = WebClient.create("http://trainer:8088/api");
+        String response = webclient.post().uri(uriBuilder -> uriBuilder
+                .path("/trainer/")
+                .queryParam("path", trainingDataSetPath)
+                .queryParam("iterations", iterations)
+                .queryParam("limit", limit)
+                .build())
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
         model.addAttribute("modeltrained", "true");
 
         return "trainmodel";
