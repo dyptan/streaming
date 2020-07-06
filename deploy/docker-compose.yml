@@ -62,13 +62,18 @@ services:
     # volumes:
     #   - model:/tmp
   streaming:
-    build: ../streaming
-    image: diptan/streaming:latest
+    build: ../streamer
+    image: diptan/streamer:latest
     depends_on:
       - kafka
       - mongo
     # volumes:
     #   - model:/tmp
+  trainer:
+    build: ../trainer
+    image: diptan/trainer:latest
+    ports:
+      - 8088:8088
 
 volumes:
   esdata:

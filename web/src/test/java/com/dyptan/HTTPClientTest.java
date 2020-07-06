@@ -2,8 +2,7 @@ package com.dyptan;
 
 import org.junit.Test;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.Assert;
 
 public class HTTPClientTest {
     @Test
@@ -14,6 +13,6 @@ public class HTTPClientTest {
                 .bodyToMono(String.class)
                 .block();
 
-        assertEquals ( "[{\"path\": \"localhost\",\n\"limit\": \"2\",\n\"iterations\": \"1\"}]", response);
+        Assert.assertEquals ( "[{\"path\": \"localhost\",\n\"limit\": \"2\",\n\"iterations\": \"1\"}]", response);
     }
 }

@@ -42,7 +42,7 @@ object AkkaHTTP extends App {
   implicit val materializer = ActorMaterializer()
   import TrainerActor._
   import system.dispatcher
-  implicit val defaultTimeout = Timeout(20 seconds)
+  implicit val defaultTimeout = Timeout(300 seconds)
 
   val trainerActor = system.actorOf(Props[TrainerActor], "TRainerActor")
 

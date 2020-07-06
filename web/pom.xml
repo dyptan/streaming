@@ -112,11 +112,11 @@
             <version>6.2.4</version>
         </dependency>
 
-        <dependency>
+        <!-- <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
-        </dependency>
+        </dependency> -->
 
         <dependency>
             <groupId>io.reactivex</groupId>

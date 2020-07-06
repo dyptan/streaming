@@ -1,6 +1,5 @@
 package com.dyptan.model;
 
-import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.Transient;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,7 +10,6 @@ import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Data
 @Entity
 @Component
 @Table(name = "Users")
