@@ -1,6 +1,5 @@
-package com.dyptan.akka
+package com.dyptan
 
-import com.dyptan.ModelTrainer
 import akka.actor.{Actor, ActorLogging, ActorSystem, Props}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
