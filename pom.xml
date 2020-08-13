@@ -21,6 +21,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <spark.version>2.4.6</spark.version>
+        <spark.mongo.version>2.4.0</spark.mongo.version>
+        <elasticsearch.version>6.2.4</elasticsearch.version>
+        <postgresql.version>42.2.6</postgresql.version>
+        <scala.version>2.11</scala.version>
+        <akka.version>2.5.20</akka.version>
+        <akka.http.version>10.1.7</akka.http.version>
     </properties>
 
     <modules>

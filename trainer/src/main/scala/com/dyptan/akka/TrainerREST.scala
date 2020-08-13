@@ -1,4 +1,4 @@
-package com.dyptan
+package com.dyptan.akka
 
 import akka.actor.{Actor, ActorLogging, ActorSystem, Props}
 import akka.http.scaladsl.Http
@@ -8,8 +8,9 @@ import akka.pattern.ask
 import akka.stream.ActorMaterializer
 import akka.util.Timeout
 import spray.json._
-
 import scala.concurrent.duration._
+
+import com.dyptan.ModelTrainer
 
 object TrainerActor {
   case class TrainRequest(trainingDataSetPath: String, limit: Int, iterations: Int)

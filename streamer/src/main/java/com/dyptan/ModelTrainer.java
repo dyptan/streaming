@@ -1,3 +1,4 @@
+
 package com.dyptan;
 
 import org.apache.spark.SparkConf;
@@ -25,16 +26,17 @@ import static scala.collection.JavaConversions.mapAsScalaMap;
 public class ModelTrainer {
     private static final Logger logger = Logger.getLogger(ModelTrainer.class.getName());
 
+
     private PipelineModel pipelineModel = null;
     public SparkSession spark = null;
     private Map<String, String> ES_CONFIG = new HashMap<String, String>();
     private String MODEL_PATH;
     private Dataset<Row>[] splitDF = null;
-    private Properties prop= new Properties();;
-
+    private Properties prop= new Properties();
 
     public ModelTrainer() throws IOException {
-//      Spark config and init
+
+
         InputStream sparkDefaults = getClass().getClassLoader()
                 .getResourceAsStream("spark-defaults.properties");
 
