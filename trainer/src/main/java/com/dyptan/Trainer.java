@@ -1,5 +1,5 @@
 
-package com.dyptan;
+package com.dyptan.akka;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.ml.Pipeline;
@@ -36,9 +36,8 @@ public class ModelTrainer {
 
     public ModelTrainer() throws IOException {
 
-
         InputStream sparkDefaults = getClass().getClassLoader()
-                .getResourceAsStream("spark-defaults.properties");
+                .getResourceAsStream("conf/spark-defaults.properties");
 
         prop.load(sparkDefaults);
 
@@ -57,7 +56,7 @@ public class ModelTrainer {
 
         //      load ES default config
         InputStream elasticProperties = getClass().getClassLoader()
-                .getResourceAsStream("trainer.properties");
+                .getResourceAsStream("conf/trainer.properties");
 
         prop.load(elasticProperties);
 
