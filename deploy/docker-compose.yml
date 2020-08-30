@@ -61,21 +61,23 @@ services:
       - 8080:8080
     depends_on:
       - db
-    # volumes:
-    #   - model:/tmp
-  streaming:
+    volumes:
+      - model:/tmp
+  streamer:
     build: ../streamer
     image: diptan/streamer:latest
     depends_on:
       - kafka
       - mongo
-    # volumes:
-    #   - model:/tmp
+    volumes:
+      - model:/tmp
   trainer:
     build: ../trainer
     image: diptan/trainer:latest
     ports:
-      - 8088:8088
+      - 8081:8081
+    volumes:
+      - model:/tmp
 
 volumes:
   esdata:

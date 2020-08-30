@@ -14,9 +14,9 @@
     <name>streamer</name>
 
     <groupId>com.dyptan</groupId>
-    <artifactId>streaming</artifactId>
+    <artifactId>streamer</artifactId>
     <packaging>jar</packaging>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
 
 
     <dependencies>

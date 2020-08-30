@@ -2,21 +2,28 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    name: streaming
-  name: streaming
+    name: streamer
+  name: streamer
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: streaming
+      name: streamer
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        name: streaming
+        name: streamer
     spec:
-      containers:
-      - image: diptan/streaming:latest
-        name: streaming
       restartPolicy: Always
+      containers:
+      - image: diptan/streamer:latest
+        name: streamer
+        volumeMounts:
+          - mountPath: /model
+            name: csi
+      volumes:
+        - name: csi
+          persistentVolumeClaim:
+            claimName: mapr-ro-pvc

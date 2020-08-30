@@ -35,10 +35,10 @@ public class SpringApp
         return new SearchRequest();
     }
 
-    @Bean
-    @Lazy
-    public ModelTrainer modelTrainer() throws IOException {
-        return new ModelTrainer();
-    }
+//    @Bean
+//    @Lazy
+//    public ModelTrainer modelTrainer() throws IOException {
+//        return new ModelTrainer();
+//    }
 }
 

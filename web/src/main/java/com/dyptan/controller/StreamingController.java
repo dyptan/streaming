@@ -1,10 +1,12 @@
 package com.dyptan.controller;
 
-import com.dyptan.ModelTrainer;
+import com.dyptan.Trainer;
 import com.dyptan.model.Car;
 import com.dyptan.model.Filter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -25,14 +27,18 @@ import java.util.logging.Logger;
 
 
 @Controller
+@EnableConfigurationProperties
+@ConfigurationProperties
 public class StreamingController {
 
-    private static final Logger logger = Logger.getLogger(ModelTrainer.class.getName());
+    private static final Logger logger = Logger.getLogger(Trainer.class.getName());
 
     private final ReactiveMongoTemplate mongoTemplate;
-    @Autowired
-    @Lazy
-    private ModelTrainer trainer;
+
+    @Value
+    (value="${trainer.endpoint}")
+    private String trainerEndpoint;
+
     private Query query = new Query();
 
     public StreamingController(ReactiveMongoTemplate mongoTemplate) throws IOException {
@@ -104,10 +110,10 @@ public class StreamingController {
             @RequestParam(name = "sourceLimit") int limit,
             @RequestParam(name = "MLiterations") int iterations,
             Model model) {
-        WebClient webclient = WebClient.create("http://trainer:8088/api");
+        WebClient webclient = WebClient.create(trainerEndpoint);
         String response = webclient.post().uri(uriBuilder -> uriBuilder
-                .path("/trainer/")
-                .queryParam("path", trainingDataSetPath)
+                .path("/trainer")
+                .queryParam("path", trainingDataSetPath.toString())
                 .queryParam("iterations", iterations)
                 .queryParam("limit", limit)
                 .build())

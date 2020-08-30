@@ -1,0 +1,6 @@
+---
+
+ - include: setup-client.yml
+
+ - include: setup-server.yml
+   when:  ldap_server_host == hostname

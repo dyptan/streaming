@@ -1,4 +1,4 @@
-package com.dyptan.akka
+package com.dyptan
 
 import java.util.Properties
 import java.util.logging.Logger
@@ -13,7 +13,6 @@ import akka.util.Timeout
 import spray.json._
 
 import scala.concurrent.duration._
-//import com.dyptan.ModelTrainer
 
 import scala.io.Source
 
@@ -23,7 +22,7 @@ object TrainerActor {
 
 class TrainerActor extends Actor with ActorLogging {
   import TrainerActor._
-  val trainer = new ModelTrainer
+  val trainer = new Trainer
 
   override def receive(): Receive = {
     case TrainRequest(path, limit, iterations) =>
@@ -41,7 +40,7 @@ trait TrainRequestJsonProtocol extends DefaultJsonProtocol {
   implicit val requestFormat = jsonFormat3(TrainRequest)
 }
 
-object AkkaHTTP {
+object TrainerGateway {
 
     val log = Logger.getLogger(this.getClass.getName)
   def main(args: Array[String]): Unit = {
@@ -81,9 +80,9 @@ object AkkaHTTP {
         }
       }
 
-    val port = properties.getOrDefault("gateway.port", "8082").asInstanceOf[String].toInt
+    val port = properties.getOrDefault("gateway.port", "8081").asInstanceOf[String].toInt
 
+    Http().bindAndHandle(trainerServerRoute, "0.0.0.0", port)
     log.info("Trainer Gateway started to listen on port " + port)
-    Http().bindAndHandle(trainerServerRoute, "localhost", port)
   }
 }

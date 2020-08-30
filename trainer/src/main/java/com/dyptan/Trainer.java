@@ -1,5 +1,5 @@
 
-package com.dyptan.akka;
+package com.dyptan;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.ml.Pipeline;
@@ -23,8 +23,8 @@ import java.util.logging.Logger;
 
 import static scala.collection.JavaConversions.mapAsScalaMap;
 
-public class ModelTrainer {
-    private static final Logger logger = Logger.getLogger(ModelTrainer.class.getName());
+public class Trainer {
+    private static final Logger logger = Logger.getLogger(Trainer.class.getName());
 
 
     private PipelineModel pipelineModel = null;
@@ -34,7 +34,7 @@ public class ModelTrainer {
     private Dataset<Row>[] splitDF = null;
     private Properties prop= new Properties();
 
-    public ModelTrainer() throws IOException {
+    public Trainer() throws IOException {
 
         InputStream sparkDefaults = getClass().getClassLoader()
                 .getResourceAsStream("conf/spark-defaults.properties");
@@ -56,7 +56,7 @@ public class ModelTrainer {
 
         //      load ES default config
         InputStream elasticProperties = getClass().getClassLoader()
-                .getResourceAsStream("conf/trainer.properties");
+                .getResourceAsStream("conf/application.properties");
 
         prop.load(elasticProperties);
 

@@ -14,15 +14,11 @@
 
     <groupId>com.dyptan</groupId>
     <artifactId>trainer</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
   <dependencies>
-      <dependency>
-          <groupId>com.dyptan</groupId>
-          <artifactId>streaming</artifactId>
-          <version>1.1-SNAPSHOT</version>
-      </dependency>
+
 
     <dependency>
         <groupId>org.scalatest</groupId>
@@ -37,6 +33,17 @@
         <version>4.13</version>
         <scope>test</scope>
     </dependency>
+
+      <dependency>
+          <groupId>org.apache.spark</groupId>
+          <artifactId>spark-sql_${scala.version}</artifactId>
+          <version>${spark.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.spark</groupId>
+          <artifactId>spark-mllib_${scala.version}</artifactId>
+          <version>${spark.version}</version>
+      </dependency>
 
     <dependency>
       <groupId>com.typesafe.akka</groupId>
@@ -59,7 +66,16 @@
       <scope>compile</scope>
     </dependency>
 
+    <dependency>
+        <groupId>org.elasticsearch</groupId>
+        <artifactId>elasticsearch-hadoop</artifactId>
+        <version>${elasticsearch.version}</version>
+    </dependency>
+
+
   </dependencies>
+
+
 
   <build>
       <plugins>
@@ -69,7 +85,9 @@
           <version>3.1.0</version>
         </plugin>
 
+
         <plugin>
+
             <groupId>org.scala-tools</groupId>
             <artifactId>maven-scala-plugin</artifactId>
             <version>2.15.2</version>
@@ -82,7 +100,7 @@
                 </execution>
             </executions>
             <configuration>
-                <scalaVersion>${scala.version}</scalaVersion>
+                <scalaVersion>2.11.12</scalaVersion>
             </configuration>
         </plugin>
                     <plugin>
@@ -91,16 +109,15 @@
                         <executions>
                             <execution>
                                 <id>copy-resources</id>
-                                <phase>validate</phase>
+                                <phase>prepare-package</phase>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${basedir}/target/ModelTrainer/</outputDirectory>
+                                    <outputDirectory>${basedir}/target/dist</outputDirectory>
                                     <resources>
                                         <resource>
-                                            <directory>resources</directory>
-                                            <filtering>true</filtering>
+                                            <directory>src/main/resources</directory>
                                         </resource>
                                     </resources>
                                 </configuration>
@@ -119,7 +136,7 @@
                                     <goal>copy-dependencies</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${project.build.directory}/ModelTrainer/lib</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/dist/lib</outputDirectory>
                                     <overWriteReleases>false</overWriteReleases>
                                     <overWriteSnapshots>false</overWriteSnapshots>
                                     <overWriteIfNewer>true</overWriteIfNewer>
@@ -135,13 +152,13 @@
                                 <manifest>
                                     <addClasspath>true</addClasspath>
                                     <classpathPrefix>lib/</classpathPrefix>
-                                    <mainClass>com.dyptan.akka.TrainerREST</mainClass>
+                                    <mainClass>com.dyptan.TrainerGateway</mainClass>
                                 </manifest>
                                 <manifestEntries>
                                     <Class-Path>.</Class-Path>
                                 </manifestEntries>
                             </archive>
-                            <finalName>ModelTrainer/TrainerRest</finalName>
+                            <finalName>dist/Trainer</finalName>
                         </configuration>
                     </plugin>
       </plugins>

@@ -1,6 +1,6 @@
 ## Prometheus deployment
 
-1. Make sure the Mapr FlexDriver is provisioned (see Readme in ../mapr)
+1. Make sure the Mapr FlexDriver is provisioned (see Readme in ../mapr/Flex)
 
 2. Create PVC
 `kubectl apply prometheus-pvc.yaml`
