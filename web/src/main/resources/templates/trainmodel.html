@@ -21,6 +21,9 @@ Training dataset location:
     <input type="submit">
 </form>
 
-<p th:if="${modeltrained=='true'}">Model trained and saved!</p>
+<p th:if="${modeltrained=='Complete'}">Model successfully trained and saved!</p>
+
+<h3 th:text=${modeltrained}>Status</h3>
+
 </body>
 </html>

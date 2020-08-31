@@ -3,7 +3,10 @@ package com.dyptan.service;
 import com.dyptan.configuration.ElasticConfiguration;
 import com.dyptan.connector.SearchConnector;
 import com.dyptan.model.Filter;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -24,7 +27,7 @@ import java.util.stream.Collectors;
 @Service
 public class SearchService {
 
-    Logger log = Logger.getLogger(this.getClass().getName());
+    Logger log = LogManager.getLogger(SearchService.class);
 
     RestHighLevelClient client;
     String index;

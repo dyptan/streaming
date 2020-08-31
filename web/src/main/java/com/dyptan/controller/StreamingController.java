@@ -20,10 +20,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 
 @Controller
@@ -31,7 +33,7 @@ import java.util.logging.Logger;
 @ConfigurationProperties
 public class StreamingController {
 
-    private static final Logger logger = Logger.getLogger(Trainer.class.getName());
+    Logger log = LogManager.getLogger(StreamingController.class);
 
     private final ReactiveMongoTemplate mongoTemplate;
 
@@ -85,7 +87,7 @@ public class StreamingController {
                         .lte(filter.getPriceTo())
         );
 
-        logger.info("Mongo query: " + this.query.toString());
+        log.info("Mongo query: " + this.query.toString());
 
         return "stream";
     }
@@ -120,7 +122,7 @@ public class StreamingController {
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
-        model.addAttribute("modeltrained", "true");
+        model.addAttribute("modeltrained", response);
 
         return "trainmodel";
     }

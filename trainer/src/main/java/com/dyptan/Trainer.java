@@ -149,17 +149,16 @@ public class Trainer {
         logger.warning("---------------------------");
     }
 
-    public void save() {
+    public void save() throws IOException {
         //Saving model to disk
         MODEL_PATH = ES_CONFIG.getOrDefault("model.path", "/tmp/trainedmodel");
 
-        try {
+        
             logger.warning("Saving to "+MODEL_PATH);
             pipelineModel.write().overwrite().save(MODEL_PATH);
 
             logger.warning("Model successfully saved.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        
+           
     }
 }

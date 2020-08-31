@@ -3,7 +3,10 @@ package com.dyptan.service;
 import com.dyptan.model.User;
 import com.dyptan.model.User.AuthDetails;
 import com.dyptan.repository.UserRepository;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,7 +19,7 @@ import java.util.Optional;
 @Service
 public class AuthService implements UserDetailsService {
 
-    Logger log = Logger.getLogger(this.getClass().getName());
+    Logger log = LogManager.getLogger(AuthService.class);
 
     @Autowired
     private UserRepository userRepository;

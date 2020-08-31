@@ -31,9 +31,13 @@ class TrainerActor extends Actor with ActorLogging {
       trainer.setSource(new java.net.URL(path), limit, iterations)
       trainer.train()
       log.info(s"Training completed")
-      trainer.save()
+      try { trainer.save()
+      } catch {
+        case e => sender() ! e.toString()
+      }
+      
       log.info(s"New model saved to "+TrainerGateway.properties.getOrDefault("model.path", "/tmp/trainedmodel"))
-
+      sender() ! "Complete"
   }
 }
 
