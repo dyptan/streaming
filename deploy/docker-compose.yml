@@ -70,14 +70,14 @@ services:
       - kafka
       - mongo
     volumes:
-      - model:/tmp
+      - model:/model
   trainer:
     build: ../trainer
     image: diptan/trainer:latest
     ports:
       - 8081:8081
     volumes:
-      - model:/tmp
+      - model:/model
 
 volumes:
   esdata:

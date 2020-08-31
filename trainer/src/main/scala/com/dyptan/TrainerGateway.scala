@@ -30,7 +30,9 @@ class TrainerActor extends Actor with ActorLogging {
 
       trainer.setSource(new java.net.URL(path), limit, iterations)
       trainer.train()
+      log.info(s"Training completed")
       trainer.save()
+      log.info(s"New model saved to "+TrainerGateway.properties.getOrDefault("model.path", "/tmp/trainedmodel"))
 
   }
 }
@@ -42,7 +44,11 @@ trait TrainRequestJsonProtocol extends DefaultJsonProtocol {
 
 object TrainerGateway {
 
-    val log = Logger.getLogger(this.getClass.getName)
+  val log = Logger.getLogger(this.getClass.getName)
+  val properties = new Properties()
+  val source = Source.fromFile("conf/application.properties")
+  properties.load(source.bufferedReader())
+
   def main(args: Array[String]): Unit = {
 
     implicit val system = ActorSystem("HighLevelExample")
@@ -50,11 +56,6 @@ object TrainerGateway {
     import TrainerActor._
     import system.dispatcher
     implicit val defaultTimeout = Timeout(300 seconds)
-
-    val properties: Properties = new Properties()
-    val source = Source.fromFile("conf/application.properties")
-    properties.load(source.bufferedReader())
-
 
     val trainerActor = system.actorOf(Props[TrainerActor], "TRainerActor")
 

@@ -36,10 +36,10 @@ public class Trainer {
 
     public Trainer() throws IOException {
 
-        InputStream sparkDefaults = getClass().getClassLoader()
-                .getResourceAsStream("conf/spark-defaults.properties");
+        InputStream properties = getClass().getClassLoader()
+                .getResourceAsStream("conf/application.properties");
 
-        prop.load(sparkDefaults);
+        prop.load(properties);
 
         Map<String, String> scalaProps = new HashMap<>();
         scalaProps.putAll((Map)prop);
@@ -55,10 +55,10 @@ public class Trainer {
         spark.sparkContext().setLogLevel("ERROR");
 
         //      load ES default config
-        InputStream elasticProperties = getClass().getClassLoader()
-                .getResourceAsStream("conf/application.properties");
+        // InputStream elasticProperties = getClass().getClassLoader()
+        //         .getResourceAsStream("conf/application.properties");
 
-        prop.load(elasticProperties);
+        // prop.load(elasticProperties);
 
         ES_CONFIG.putAll((Map)prop);
 
