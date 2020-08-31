@@ -5,6 +5,9 @@ metadata:
     name: trainer
   name: trainer
 spec:
+  # securityContext:
+  #   runAsUser: 5000
+  #   fsGroup: 5000
   containers:
     - name: trainer
       image: diptan/trainer:latest
@@ -20,4 +23,4 @@ spec:
   volumes:
     - name: csi
       persistentVolumeClaim:
-        claimName: mapr-rw-pvc
+        claimName: model-rw-pvc

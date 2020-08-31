@@ -17,6 +17,9 @@ spec:
         name: streamer
     spec:
       restartPolicy: Always
+      # securityContext:
+      #   runAsUser: 5000
+      #   fsGroup: 5000
       containers:
       - image: diptan/streamer:latest
         name: streamer
@@ -26,4 +29,4 @@ spec:
       volumes:
         - name: csi
           persistentVolumeClaim:
-            claimName: mapr-ro-pvc
+            claimName: model-ro-pvc
