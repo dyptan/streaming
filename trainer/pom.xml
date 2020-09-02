@@ -19,7 +19,6 @@
 
   <dependencies>
 
-
     <dependency>
         <groupId>org.scalatest</groupId>
         <artifactId>scalatest_${scala.version}</artifactId>
@@ -34,16 +33,17 @@
         <scope>test</scope>
     </dependency>
 
-      <dependency>
-          <groupId>org.apache.spark</groupId>
-          <artifactId>spark-sql_${scala.version}</artifactId>
-          <version>${spark.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.spark</groupId>
-          <artifactId>spark-mllib_${scala.version}</artifactId>
-          <version>${spark.version}</version>
-      </dependency>
+    <dependency>
+        <groupId>org.apache.spark</groupId>
+        <artifactId>spark-sql_${scala.version}</artifactId>
+        <version>${spark.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.apache.spark</groupId>
+        <artifactId>spark-mllib_${scala.version}</artifactId>
+        <version>${spark.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>com.typesafe.akka</groupId>
@@ -72,22 +72,19 @@
         <version>${elasticsearch.version}</version>
     </dependency>
 
-
   </dependencies>
 
 
 
   <build>
       <plugins>
-        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
+
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.1.0</version>
         </plugin>
 
-
         <plugin>
-
             <groupId>org.scala-tools</groupId>
             <artifactId>maven-scala-plugin</artifactId>
             <version>2.15.2</version>
@@ -103,64 +100,67 @@
                 <scalaVersion>2.11.12</scalaVersion>
             </configuration>
         </plugin>
-                    <plugin>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>2.6</version>
-                        <executions>
-                            <execution>
-                                <id>copy-resources</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${basedir}/target/dist</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>src/main/resources</directory>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
+
+        <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>2.6</version>
+            <executions>
+                <execution>
+                    <id>copy-resources</id>
+                    <phase>prepare-package</phase>
+                    <goals>
+                        <goal>copy-resources</goal>
+                    </goals>
+                    <configuration>
+                        <outputDirectory>${basedir}/target/dist</outputDirectory>
+                        <resources>
+                            <resource>
+                                <directory>src/main/resources</directory>
+                            </resource>
+                        </resources>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
                     
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-dependencies</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>copy-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.directory}/dist/lib</outputDirectory>
-                                    <overWriteReleases>false</overWriteReleases>
-                                    <overWriteSnapshots>false</overWriteSnapshots>
-                                    <overWriteIfNewer>true</overWriteIfNewer>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <configuration>
-                            <archive>
-                                <manifest>
-                                    <addClasspath>true</addClasspath>
-                                    <classpathPrefix>lib/</classpathPrefix>
-                                    <mainClass>com.dyptan.TrainerGateway</mainClass>
-                                </manifest>
-                                <manifestEntries>
-                                    <Class-Path>.</Class-Path>
-                                </manifestEntries>
-                            </archive>
-                            <finalName>dist/Trainer</finalName>
-                        </configuration>
-                    </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>copy-dependencies</id>
+                    <phase>prepare-package</phase>
+                    <goals>
+                        <goal>copy-dependencies</goal>
+                    </goals>
+                    <configuration>
+                        <outputDirectory>${project.build.directory}/dist/lib</outputDirectory>
+                        <overWriteReleases>false</overWriteReleases>
+                        <overWriteSnapshots>false</overWriteSnapshots>
+                        <overWriteIfNewer>true</overWriteIfNewer>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+                <archive>
+                    <manifest>
+                        <addClasspath>true</addClasspath>
+                        <classpathPrefix>lib/</classpathPrefix>
+                        <mainClass>com.dyptan.TrainerGateway</mainClass>
+                    </manifest>
+                    <manifestEntries>
+                        <Class-Path>.</Class-Path>
+                    </manifestEntries>
+                </archive>
+                <finalName>dist/Trainer</finalName>
+            </configuration>
+        </plugin>
+
       </plugins>
   </build>
 </project>

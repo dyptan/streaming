@@ -32,7 +32,7 @@ public class Trainer {
     private Map<String, String> ES_CONFIG = new HashMap<String, String>();
     private String MODEL_PATH;
     private Dataset<Row>[] splitDF = null;
-    private Properties prop= new Properties();
+    private Properties prop = new Properties();
 
     public Trainer() throws IOException {
 
@@ -152,13 +152,10 @@ public class Trainer {
     public void save() throws IOException {
         //Saving model to disk
         MODEL_PATH = ES_CONFIG.getOrDefault("model.path", "/tmp/trainedmodel");
-
         
             logger.warning("Saving to "+MODEL_PATH);
             pipelineModel.write().overwrite().save(MODEL_PATH);
 
-            logger.warning("Model successfully saved.");
-        
-           
+            logger.warning("Model successfully saved.");          
     }
 }

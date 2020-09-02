@@ -24,3 +24,15 @@ spec:
     ports:
     - containerPort: 9092
   restartPolicy: Always
+---
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: kafka
+  spec:
+    ports:
+    - port: 9092
+      targetPort: 9092
+    selector:
+      name: kafka
+  

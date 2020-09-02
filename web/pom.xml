@@ -6,16 +6,16 @@
 
     <name>web</name>
 
-    <groupId>com.dyptan</groupId>
-    <artifactId>web</artifactId>
-    <version>1.4-SNAPSHOT</version>
-    <packaging>jar</packaging>
-
     <parent>
         <groupId>com.dyptan</groupId>
         <artifactId>parent</artifactId>
         <version>1.0</version>
     </parent>
+
+    <groupId>com.dyptan</groupId>
+    <artifactId>web</artifactId>
+    <version>1.4-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
      <dependencies>
         <dependency>

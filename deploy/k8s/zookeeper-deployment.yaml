@@ -23,3 +23,15 @@ spec:
         ports:
         - containerPort: 2181
       restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+spec:
+  ports:
+  - port: 2181
+    targetPort: 2181
+  selector:
+    name: zookeeper
+

@@ -25,4 +25,15 @@ spec:
         ports:
         - containerPort: 5432
       restartPolicy: Always
-
+---
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: db
+  spec:
+    ports:
+    - port: 5432
+      targetPort: 5432
+    selector:
+      name: db
+  
