@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: static-pod
+spec:
+  # Sets files owner to Mapr
+  securityContext:
+    runAsUser: 5000
+    fsGroup: 5000
+  containers:
+  - name: busybox
+    image: busybox
+    args:
+    - sleep
+    - "1000000"
+    resources:
+      requests:
+        memory: "2Gi"
+        cpu: "500m"
+    volumeMounts:
+    - mountPath: /static-test
+      name: static-csi
+  volumes:
+    - name: static-csi
+      persistentVolumeClaim:
+        claimName: model-rw-pvc
