@@ -66,7 +66,7 @@ object TrainerGateway {
           'iterations.as[Int],
           'limit.as[Int]) 
           
-          { (path, limit, iterations) =>
+          { (path: String, limit: Int, iterations: Int) =>
           post {
             val trainerResponseFuture = (trainerActor ? TrainRequest(path, limit, iterations))
               .mapTo[String]
