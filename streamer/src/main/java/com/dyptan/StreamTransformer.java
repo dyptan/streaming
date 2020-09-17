@@ -38,10 +38,10 @@ public class StreamTransformer implements  Runnable{
             .add("title", StringType, true)
             .add("published", TimestampType, true);
 
-    private String KAFKA_BOOTSTRAP_SERVER = null;
-    private String KAFKA_TOPIC = null;
-    private String MODEL_PATH = null;
-    private SparkSession spark = null;
+    private String KAFKA_BOOTSTRAP_SERVER;
+    private String KAFKA_TOPIC;
+    String MODEL_PATH;
+    private SparkSession spark;
     public StreamingQuery query = null;
 
     public StreamTransformer() {
