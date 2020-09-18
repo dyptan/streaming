@@ -43,3 +43,37 @@ jobs:
       with:
         name: streamer
         path: streamer/target/dist
+        
+  deploy:  
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to DockerHub Registr
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      - name: Get the version
+        id: vars
+        run: echo ::set-output name=tag::$(echo ${GITHUB_REF:10})
+      - name: Download web artifact
+        uses: actions/download-artifact@v2
+        with:
+         name: web
+      - name: Download trainer artifact
+        uses: actions/download-artifact@v2
+        with:
+         name: trainer
+      - name: Download streaming artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: streamer
+      - name: Build the tagged Web image
+        run: docker build web --file web/DockerfileAction --tag diptan/web:${{steps.vars.outputs.tag}}
+      - name: Push the tagged Web image
+        run: docker push diptan/web:${{steps.vars.outputs.tag}}
+      - name: Build the latest Trainer image
+        run: docker build trainer --file trainer/DockerfileAction --tag diptan/trainer:latest
+      - name: Push the latest TRainer image
+        run: docker push diptan/trainer:latest
+      - name: Build the latest Streamer image
+        run: docker build streamer --file streamer/DockerfileAction --tag diptan/streamer:latest
+      - name: Push the latest Streamer image
+        run: docker push diptan/streamer:latest
