@@ -3,6 +3,7 @@ package com.dyptan;
 import com.dyptan.controller.LoginController;
 import com.dyptan.repository.UserRepository;
 import com.dyptan.service.SearchService;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Ignore
 @RunWith(SpringRunner.class)
 @WebMvcTest(LoginController.class)
 public class UITest {
@@ -34,6 +36,7 @@ public class UITest {
     @MockBean
     SearchService searchService;
 
+    @Ignore
     @Test
     public void getLoginPage() throws Exception {
         this.mvc.perform(get("/login"))
