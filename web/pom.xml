@@ -30,16 +30,16 @@
             <version>1.3-SNAPSHOT</version>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <!-- <exclusions>
+             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-logging</artifactId>
                 </exclusion>
-            </exclusions> -->
-        </dependency>
+            </exclusions>
+        </dependency>-->
 
         <dependency>
             <groupId>io.micrometer</groupId>

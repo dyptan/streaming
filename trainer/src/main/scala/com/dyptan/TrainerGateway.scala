@@ -30,7 +30,7 @@ class TrainerActor extends Actor with ActorLogging {
       log.info(s"Training completed")
       try { trainer.save()
       } catch {
-        case e => sender() ! e.toString()
+        case e: Throwable => sender() ! e.toString()
       }
       
       log.info(s"New model saved to "+TrainerGateway.properties.getOrDefault("model.path", "/tmp/trainedmodel"))
