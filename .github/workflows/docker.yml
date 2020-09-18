@@ -18,17 +18,14 @@ jobs:
                   uses: actions/download-artifact@v2
                   with:
                    name: web
-                   path: web/target/web*
                 - name: Download trainer artifact
                   uses: actions/download-artifact@v2
                   with:
                    name: trainer
-                   path: trainer/target/dist/
                 - name: Download streaming artifact
                   uses: actions/download-artifact@v2
                   with:
                     name: streamer
-                    path: streamer/target/dist
                 - name: Build the tagged Web image
                   run: docker build web --file web/DockerfileAction --tag diptan/web:${{steps.vars.outputs.tag}}
                 - name: Push the tagged Web image
