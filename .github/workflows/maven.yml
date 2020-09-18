@@ -20,5 +20,26 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - name: Cache Maven packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+    - name: Upload web artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: web
+        path: web/target/web*
+    - name: Upload trainer artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: trainer
+        path: trainer/target/dist/
+    - name: Upload streaming artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: streamer
+        path: streamer/target/dist
