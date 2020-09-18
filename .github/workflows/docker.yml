@@ -14,18 +14,18 @@ jobs:
                 - name: Get the version
                   id: vars
                   run: echo ::set-output name=tag::$(echo ${GITHUB_REF:10})
-                - name: Upload web artifact
-                - uses: actions/upload-artifact@v2
+                - name: Download web artifact
+                  uses: actions/download-artifact@v2
                   with:
                    name: web
                    path: web/target/web*
-                - name: Upload trainer artifact
-                - uses: actions/upload-artifact@v2
+                - name: Download trainer artifact
+                  uses: actions/download-artifact@v2
                   with:
                    name: trainer
                    path: trainer/target/dist/
-                - name: Upload streaming artifact
-                - uses: actions/upload-artifact@v2
+                - name: Download streaming artifact
+                  uses: actions/download-artifact@v2
                   with:
                     name: streamer
                     path: streamer/target/dist
