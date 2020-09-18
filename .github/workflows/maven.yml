@@ -64,6 +64,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
          name: web
+         path: /
       - name: checking files
         run: ls
       - name: Build the tagged Web image
@@ -75,6 +76,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
          name: trainer
+         path: /
       - name: Build the latest Trainer image
         run: docker build trainer --file trainer/DockerfileAction --tag diptan/trainer:latest
       - name: Push the latest TRainer image
@@ -84,6 +86,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: streamer
+          path: /
       - name: Build the latest Streamer image
         run: docker build streamer --file streamer/DockerfileAction --tag diptan/streamer:latest
       - name: Push the latest Streamer image
