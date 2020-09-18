@@ -36,4 +36,14 @@
         <module>trainer</module>
     </modules>
 
+
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub OWNER Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/dyptan/analytics</url>
+        </repository>
+    </distributionManagement>
+
 </project>
