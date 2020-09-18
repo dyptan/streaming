@@ -47,8 +47,4 @@ public class UITest {
                 .andReturn().getResponse();
     }
 
-    @Test
-    public void auth() {
-
-    }
 }

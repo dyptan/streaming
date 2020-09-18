@@ -9,6 +9,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.search.SearchHit;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import static junit.framework.TestCase.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+/// Integration tests suite
 public class SearchTest {
 
     @Autowired
@@ -47,7 +49,8 @@ public class SearchTest {
     }
 
 
-    //    @Test
+    @Ignore
+    @Test
     public void indexElasticWithFilter() {
         String jsonObject = "{\n" +
                 "  \"@timestamp\": \"2018-10-20T17:41:05.171Z\",\n" +
@@ -95,6 +98,7 @@ public class SearchTest {
         }
     }
 
+    @Ignore
     @Test
     public void getAllBrands(){
         Set<String> brands = search.getBrands();
@@ -104,6 +108,7 @@ public class SearchTest {
         }
     }
 
+    @Ignore
     @Test
     public void getAllData(){
         SearchHit[] data = search.getAllHits(new SearchRequest("olx"));
@@ -112,7 +117,7 @@ public class SearchTest {
                 .limit(5)
                 .forEach(System.out::println);
     }
-
+    @Ignore
     @Test
     public void getFilteredData(){
         SearchHit[] data = search.getFilteredHits(getDummyFilter());
@@ -122,6 +127,7 @@ public class SearchTest {
                 .forEach(System.out::println);
     }
 
+    @Ignore
     @Test
     public void getAllSearchHits() {
         SearchResponse response = null;

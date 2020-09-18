@@ -6,6 +6,7 @@ import com.dyptan.model.User;
 import com.dyptan.repository.UserRepository;
 import com.dyptan.service.SearchService;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ public class PersistanceTest {
         assertThat(userRepository).isNotNull();
     }
 
+    @Ignore
     @Test
     public void TestUserPersistance(){
 
@@ -64,6 +66,7 @@ public class PersistanceTest {
         Assert.assertEquals("admin", userRepository.findByUsername("admin").get().getUsername());
     }
 
+    @Ignore
     @Test
     public void TestFilterPersistance(){
         Assert.assertEquals(2018, userRepository.findByUsername("admin").get().getFilters().get(0).getYearTo());

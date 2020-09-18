@@ -1,10 +1,13 @@
 package com.dyptan;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.junit.Assert;
 
 public class HTTPClientTest {
+
+    @Ignore
     @Test
     public void getResponse() {
         WebClient webclient = WebClient.create("http://localhost:8088/api");
