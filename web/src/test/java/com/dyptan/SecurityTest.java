@@ -33,6 +33,7 @@ SecurityTest {
     UserRepository userRepository;
 
 
+    @Ignore
     @Test
     public void contextLoads() throws Exception {
         assertThat(user).isNotNull();
