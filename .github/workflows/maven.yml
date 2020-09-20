@@ -105,7 +105,7 @@ jobs:
           tags: latest
            #  Automatically tags the built image with the git reference as per the readme
           # Docker repository to tag the image with
-#           repository: web
+          repository: web
           # Comma-delimited list of tags. These will be added to the registry/repository to form the image's tags
           path: web
           # Path to the Dockerfile (Default is '{path}/Dockerfile')
