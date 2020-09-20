@@ -36,16 +36,16 @@ jobs:
       with:
         name: web
         path: web/target/web*
-    - name: Upload trainer artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: trainer
-        path: trainer/target/dist/
-    - name: Upload streaming artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: streamer
-        path: streamer/target/dist
+#     - name: Upload trainer artifact
+#       uses: actions/upload-artifact@v2
+#       with:
+#         name: trainer
+#         path: trainer/target/dist/
+#     - name: Upload streaming artifact
+#       uses: actions/upload-artifact@v2
+#       with:
+#         name: streamer
+#         path: streamer/target/dist
         
   deploy:  
     needs: build
@@ -102,7 +102,7 @@ jobs:
           username: diptan
           # Password or personal access token used to log in to a Docker registry. If not set then no login will occur
           password: ${{ secrets.DOCKER_PASSWORD }}
-          tags: diptan/web:latest
+          tags: latest
            #  Automatically tags the built image with the git reference as per the readme
           # Docker repository to tag the image with
 #           repository: web
