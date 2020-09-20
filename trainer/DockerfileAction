@@ -1,6 +1,0 @@
-FROM openjdk:8-jre-slim
-ADD lib /libs
-ADD conf /conf
-ADD Trainer.jar app.jar
-ENTRYPOINT ["java", "-cp", "/libs/*:/conf/:app.jar", "com.dyptan.TrainerGateway"]
-EXPOSE 8081
