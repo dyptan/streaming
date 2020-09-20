@@ -64,9 +64,9 @@ jobs:
         uses: actions/download-artifact@v2
         with:
          name: web
-         path: web/target/dist
+         path: web/
       - name: checking files
-        run: ls web/target/dist
+        run: ls web/
 #       - name: Build the tagged Web image
 #         run: docker build web --file web/DockerfileAction --tag diptan/web:latest
 #         working-directory: ./dist
