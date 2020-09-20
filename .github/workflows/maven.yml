@@ -109,6 +109,6 @@ jobs:
           # Comma-delimited list of tags. These will be added to the registry/repository to form the image's tags
           path: web
           # Path to the Dockerfile (Default is '{path}/Dockerfile')
-          dockerfile: Dockerfile
+#           dockerfile: Dockerfile
           # Sets the target stage to build
 
