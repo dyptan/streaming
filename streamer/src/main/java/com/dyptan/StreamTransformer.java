@@ -49,7 +49,7 @@ public class StreamTransformer implements  Runnable{
 //      Loading up Stream properties
 
         InputStream sparkDefaults = getClass().getClassLoader()
-                .getResourceAsStream("application.properties");
+                .getResourceAsStream("conf/application.properties");
 
         Properties STREAM_CONFIG = new Properties();
         try {

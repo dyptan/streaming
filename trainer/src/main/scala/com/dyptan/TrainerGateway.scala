@@ -1,7 +1,9 @@
 package com.dyptan
 
+import java.io.InputStream
 import java.util.Properties
 import java.util.logging.Logger
+
 import akka.actor.{Actor, ActorLogging, ActorSystem, Props}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
@@ -10,6 +12,7 @@ import akka.pattern.ask
 import akka.stream.ActorMaterializer
 import akka.util.Timeout
 import spray.json._
+
 import scala.concurrent.duration._
 import scala.io.Source
 
@@ -42,9 +45,11 @@ object TrainerGateway {
 
   val log = Logger.getLogger(this.getClass.getName)
 
+  val propertiesFile: InputStream = getClass.getClassLoader.getResourceAsStream("conf/application.properties")
   val properties = new Properties()
-  val source = Source.fromFile("conf/application.properties")
-  properties.load(source.bufferedReader())
+  // does not work with relative path
+//  val source = Source.fromFile("conf/application.properties")
+  properties.load(propertiesFile)
 
   def main(args: Array[String]): Unit = {
 
@@ -67,7 +72,7 @@ object TrainerGateway {
           'limit.as[Int])
           { (path: String, iterations: Int, limit: Int) =>
           post {
-            val trainerResponseFuture = (trainerActor ? TrainRequest(path, limit, iterationsf))
+            val trainerResponseFuture = (trainerActor ? TrainRequest(path, limit, iterations))
               .mapTo[String]
 
             val entityFuture = trainerResponseFuture.map { responseOption =>
