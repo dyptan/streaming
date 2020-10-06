@@ -1,6 +1,5 @@
 package com.dyptan.controller;
 
-import com.dyptan.Trainer;
 import com.dyptan.model.Car;
 import com.dyptan.model.Filter;
 
@@ -41,6 +40,7 @@ public class StreamingController {
     (value="${trainer.endpoint}")
     private String trainerEndpoint;
 
+    WebClient webclient;
     private Query query = new Query();
 
     public StreamingController(ReactiveMongoTemplate mongoTemplate) throws IOException {
@@ -106,15 +106,16 @@ public class StreamingController {
         return "trainmodel";
     }
 
+
     @PostMapping("/trainmodel")
     public String train(
             @RequestParam(name = "trainingDataSetPath") URL trainingDataSetPath,
             @RequestParam(name = "sourceLimit") int limit,
             @RequestParam(name = "MLiterations") int iterations,
             Model model) {
-        WebClient webclient = WebClient.create(trainerEndpoint);
+        webclient = WebClient.create(trainerEndpoint);
         String response = webclient.post().uri(uriBuilder -> uriBuilder
-                .path("/trainer")
+                .path("/train")
                 .queryParam("path", trainingDataSetPath.toString())
                 .queryParam("iterations", iterations)
                 .queryParam("limit", limit)
@@ -122,9 +123,28 @@ public class StreamingController {
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
-        model.addAttribute("modeltrained", response);
+
+        model.addAttribute("modelTrained", response);
 
         return "trainmodel";
-    }
+        }
+
+        @PostMapping("/applymodel")
+        public String apply(
+                Model model){
+        log.info("Apply model received");
+            String response = webclient.post()
+                    .uri(uriBuilder -> uriBuilder
+                    .path("/apply")
+                    .build()
+                    )
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
+            model.addAttribute("modelApplied", response);
+
+            return "trainmodel";
+        }
 
 }

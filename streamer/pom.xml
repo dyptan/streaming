@@ -16,13 +16,13 @@
     <groupId>com.dyptan</groupId>
     <artifactId>streamer</artifactId>
     <packaging>jar</packaging>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.4-SNAPSHOT</version>
 
 
     <dependencies>
 
 
-        <!--Tests deps-->
+        <!--Scala Tests-->
         <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest_${scala.version}</artifactId>
@@ -30,40 +30,22 @@
             <scope>compile</scope>
         </dependency>
 
+        <!--Junit-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
 
-        <!--Spark deps-->
-
-        <dependency>
-            <groupId>org.codehaus.janino</groupId>
-            <artifactId>commons-compiler</artifactId>
-            <version>3.0.15</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.janino</groupId>
-            <artifactId>janino</artifactId>
-            <version>3.0.15</version>
-        </dependency>
-
-        <!--Fix for StopWatch error-->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>28.2-android</version>
-        </dependency>
-
-        <dependency>
+        <!--Spark-->
+         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_${scala.version}</artifactId>
             <version>${spark.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-streaming-kafka-0-10_2.12</artifactId>
+            <artifactId>spark-streaming-kafka-0-10_${scala.version}</artifactId>
             <version>${spark.version}</version>
         </dependency>
         <dependency>
@@ -77,35 +59,89 @@
             <version>${spark.version}</version>
         </dependency>
 
+        <!--GRPC-->
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-netty</artifactId>
+            <version>1.16.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-protobuf</artifactId>
+            <version>1.16.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-stub</artifactId>
+            <version>1.16.1</version>
+        </dependency>
+
+        <!--Spark HDFS-->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
+            <version>2.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-mapreduce-client-core</artifactId>
+            <version>2.7.2</version>
+        </dependency>
+
+        <!--Mongo-->
         <dependency>
             <groupId>org.mongodb.spark</groupId>
             <artifactId>mongo-spark-connector_${scala.version}</artifactId>
             <version>${spark.mongo.version}</version>
         </dependency>
-        
+
+        <!--Elasticsearch-->
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch-hadoop</artifactId>
             <version>${elasticsearch.version}</version>
         </dependency>
+
     </dependencies>
 
-
-    <profiles>
-        <profile>
-            <id>stream-jar-with-dependencies</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
             <build>
+                <extensions>
+                    <extension>
+                        <groupId>kr.motd.maven</groupId>
+                        <artifactId>os-maven-plugin</artifactId>
+                        <version>1.6.1</version>
+                    </extension>
+                 </extensions>
                 <plugins>
                     <plugin>
+                        <groupId>org.xolstice.maven.plugins</groupId>
+                        <artifactId>protobuf-maven-plugin</artifactId>
+                        <version>0.6.1</version>
+                        <configuration>
+                            <protocArtifact>
+                                com.google.protobuf:protoc:3.3.0:exe:${os.detected.classifier}
+                            </protocArtifact>
+                            <pluginId>grpc-java</pluginId>
+                            <pluginArtifact>
+                                io.grpc:protoc-gen-grpc-java:1.4.0:exe:${os.detected.classifier}
+                            </pluginArtifact>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>compile</goal>
+                                    <goal>compile-custom</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-assembly-plugin</artifactId>
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>com.dyptan.Main</mainClass>
+                                    <mainClass>com.dyptan.StreamLauncher</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
@@ -114,25 +150,42 @@
                         </configuration>
                         <executions>
                             <execution>
-                                <id>make-assembly</id> <!-- this is used for inheritance merges -->
-                                <phase>package</phase> <!-- bind to the packaging phase -->
+                                <id>make-assembly</id> &lt;!&ndash; this is used for inheritance merges &ndash;&gt;
+                                <phase>package</phase> &lt;!&ndash; bind to the packaging phase &ndash;&gt;
                                 <goals>
                                     <goal>single</goal>
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-            <id>manual</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
+                    </plugin>-->
+                    <!--<plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>2.3</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactSet>
+                                        <includes>
+                                            <include>com.google.guava:*</include>
+                                        </includes>
+                                    </artifactSet>
+                                    <minimizeJar>false</minimizeJar>
+                                    <relocations>
+                                        <relocation>
+                                            <pattern>com.google.common</pattern>
+                                            <shadedPattern>repackaged.com.google.common</shadedPattern>
+                                        </relocation>
+                                    </relocations>
+                                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>-->
                     <plugin>
                         <artifactId>maven-resources-plugin</artifactId>
                         <version>2.6</version>
@@ -155,7 +208,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
@@ -183,20 +235,15 @@
                                 <manifest>
                                     <addClasspath>true</addClasspath>
                                     <classpathPrefix>lib/</classpathPrefix>
-                                    <mainClass>com.dyptan.Main</mainClass>
+                                    <mainClass>com.dyptan.StreamLauncher</mainClass>
                                 </manifest>
                                 <manifestEntries>
                                     <Class-Path>.</Class-Path>
                                 </manifestEntries>
                             </archive>
-
                             <finalName>dist/StreamTransformer</finalName>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
-        </profile>
-
-    </profiles>
-
 </project>

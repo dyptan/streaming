@@ -19,13 +19,15 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+//import java.util.logging.Logger;
 
 import static scala.collection.JavaConversions.mapAsScalaMap;
 
 public class Trainer {
-    private static final Logger logger = Logger.getLogger(Trainer.class.getName());
-
+    private static final Logger logger = LoggerFactory.getLogger(Trainer.class.getName());
 
     private PipelineModel pipelineModel = null;
     public SparkSession spark = null;
@@ -52,16 +54,10 @@ public class Trainer {
                 .appName("ReadFromElasticAndTrainModel")
                 .config(sparkConf)
                 .getOrCreate();
-        spark.sparkContext().setLogLevel("ERROR");
-
-        //      load ES default config
-        // InputStream elasticProperties = getClass().getClassLoader()
-        //         .getResourceAsStream("conf/application.properties");
-
-        // prop.load(elasticProperties);
 
         ES_CONFIG.putAll((Map)prop);
 
+        logger.info("Spark Started..");
     }
 
     // override default ES config
@@ -73,11 +69,13 @@ public class Trainer {
         //TODO duplicate properties in config file
         properties.setProperty("ml.source.limit", String.valueOf(limit));
         properties.setProperty("ml.iterations", String.valueOf(iterations));
-
+        //Override properties from config file
         ES_CONFIG.putAll((Map) properties);
     }
 
     public void train() {
+        logger.info("Training Started..");
+
         Dataset<Row> cars = spark.read().format("org.elasticsearch.spark.sql").options(ES_CONFIG)
                 .option("inferSchema", true)
                 .load();
@@ -127,7 +125,7 @@ public class Trainer {
 
     }
 
-    public void evaluate(){
+    public String evaluate(){
 
         Dataset<Row> evaluationDF = splitDF[1];
 
@@ -143,19 +141,15 @@ public class Trainer {
         double r2 = evaluateR2.evaluate(forEvaluationDF);
         double rmse = evaluateRMSE.evaluate(forEvaluationDF);
 
-        logger.warning("---------------------------");
-        logger.warning("R2 =" + r2);
-        logger.warning("RMSE =" + rmse);
-        logger.warning("---------------------------");
+        return String.format("R2 = %s \n RMSE = %s", r2, rmse);
     }
 
-    public void save() throws IOException {
+    public void save(String path) throws IOException {
         //Saving model to disk
-        MODEL_PATH = ES_CONFIG.getOrDefault("model.path", "/tmp/trainedmodel");
-        
-            logger.warning("Saving to "+MODEL_PATH);
+        MODEL_PATH = path;
+            logger.warn("Saving to "+MODEL_PATH);
             pipelineModel.write().overwrite().save(MODEL_PATH);
 
-            logger.warning("Model successfully saved.");          
+            logger.info("Model successfully saved to "+MODEL_PATH);
     }
 }

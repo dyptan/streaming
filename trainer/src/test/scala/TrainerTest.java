@@ -6,13 +6,13 @@ import java.io.IOException;
 
 public class TrainerTest {
 
-    @Ignore
+//    @Ignore
     @Test
     public void runModelTrainer() throws IOException {
         Trainer modelTrainer = new Trainer();
         modelTrainer.train();
-        modelTrainer.save();
-        modelTrainer.spark.close();
+        modelTrainer.save("/mnt/model/trainedModel/");
+        modelTrainer.spark.stop();
     }
 
 }

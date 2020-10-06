@@ -1,6 +1,7 @@
 package com.dyptan;
 
 import com.mongodb.spark.MongoSpark;
+import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.function.VoidFunction2;
 import org.apache.spark.ml.PipelineModel;
@@ -16,7 +17,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Logger;
+
 
 import static org.apache.spark.sql.functions.col;
 import static org.apache.spark.sql.functions.from_json;
@@ -43,10 +44,13 @@ public class StreamTransformer implements  Runnable{
     String MODEL_PATH;
     private SparkSession spark;
     public StreamingQuery query = null;
+    public int id;
 
-    public StreamTransformer() {
+    public StreamTransformer(int Id) {
+        this.id = Id;
 
-//      Loading up Stream properties
+        logger.info("Loading up Stream properties.");
+
 
         InputStream sparkDefaults = getClass().getClassLoader()
                 .getResourceAsStream("conf/application.properties");
@@ -78,19 +82,17 @@ public class StreamTransformer implements  Runnable{
                 .config(sparkConf)
                 .getOrCreate();
 
-        spark.sparkContext().setLogLevel("WARN");
-
     }
 
     @Override
     public void run() {
-//      Start reading data from source
+        logger.info("Start reading data from source");
         Dataset<Row> rawKafkaStream = spark
                 .readStream()
                 .format("kafka")
                 .option("kafka.bootstrap.servers", KAFKA_BOOTSTRAP_SERVER)
                 .option("subscribe", KAFKA_TOPIC)
-                .option("startingOffsets", "earliest")
+                .option("startingOffsets", "latest")
                 .load();
 
         Dataset<Row> parsedStream = rawKafkaStream.select(
@@ -116,14 +118,16 @@ public class StreamTransformer implements  Runnable{
 
         Dataset<Row> filteredDf = streamPredictionsDF.drop("features");
 
-        query = filteredDf.writeStream()
-//                .outputMode("append").format("console")
-                .foreachBatch(
-                (VoidFunction2<Dataset<Row>, Long>) (records, batchId) -> {
-                    logger.warning(records.showString(10, 15, false));
-                    MongoSpark.save(records);
-                }
-        ).start();
+
+            query = filteredDf.writeStream()
+    //                .outputMode("append").format("console")
+                    .foreachBatch(
+                    (VoidFunction2<Dataset<Row>, Long>) (records, batchId) -> {
+                        logger.warn(records.showString(10, 15, false));
+                        MongoSpark.save(records);
+                    }
+            ).start();
+
 
         try {
             query.awaitTermination();
@@ -132,4 +136,10 @@ public class StreamTransformer implements  Runnable{
         }
 
     }
+
+    public void applyNewModel(String newModelPath) {
+        MODEL_PATH = newModelPath;
+    }
+
+
 }

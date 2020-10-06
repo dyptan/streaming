@@ -18,12 +18,20 @@ Training dataset location:
     ML Iterations:
     <input name="MLiterations" type="text" value="1000"><br>
 
-    <input type="submit">
+    <input type="submit" value="Train new model">
 </form>
 
-<p th:if="${modeltrained=='Complete'}">Model successfully trained and saved!</p>
+<div th:if="${modelTrained!=null}">Model successfully trained and evaluated:
+    <h5 th:text=${modelTrained}>Status</h5>
 
-<h3 th:text=${modeltrained}>Status</h3>
+    <div>
+    <form action="/applymodel" method="post">
+    <input type="submit" value="Save and Deploy">
+    </form>
+    </div>
+</div>
+
+<div th:if="${modelApplied=='true'}">Model successfully saved and deployed</div>
 
 </body>
 </html>

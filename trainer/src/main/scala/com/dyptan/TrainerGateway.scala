@@ -14,36 +14,49 @@ import akka.util.Timeout
 import spray.json._
 
 import scala.concurrent.duration._
-import scala.io.Source
 
 object TrainerActor {
   case class TrainRequest(trainingDataSetPath: String, limit: Int, iterations: Int)
+  case class ApplyRequest(path: String)
 }
 
 class TrainerActor extends Actor with ActorLogging {
   import TrainerActor._
   val trainer = new Trainer
 
-  override def receive(): Receive = {
+  override def receive: Receive = readyToTrain()
+
+  def readyToTrain(): Receive = {
     case TrainRequest(path, limit, iterations) =>
       log.info(s"Train request received with path: $path, limit: $limit,iterations: $iterations")
 
       trainer.setSource(new java.net.URL(path), limit, iterations)
       trainer.train()
       log.info(s"Training completed")
-      try { trainer.save()
+
+      sender() ! trainer.evaluate()
+      context.become(readyToApply(), false)
+      }
+
+  def readyToApply(): Receive = {
+    case ApplyRequest(path) =>
+      log.info("Applying model...")
+      try { trainer.save(path)
       } catch {
         case e: Throwable => sender() ! e.toString()
       }
-      
-      log.info(s"New model saved to "+TrainerGateway.properties.getOrDefault("model.path", "/tmp/trainedmodel"))
-      sender() ! "Complete"
+      log.info(s"New model saved to "+path)
+
+      sender() ! "true"
+      context.unbecome()
   }
 }
 
-object TrainerGateway {
+class TrainerGateway {
 
-  val log = Logger.getLogger(this.getClass.getName)
+//  import org.slf4j.Logger
+  import org.slf4j.LoggerFactory
+  val log = LoggerFactory.getLogger(classOf[TrainerGateway])
 
   val propertiesFile: InputStream = getClass.getClassLoader.getResourceAsStream("conf/application.properties")
   val properties = new Properties()
@@ -51,21 +64,20 @@ object TrainerGateway {
 //  val source = Source.fromFile("conf/application.properties")
   properties.load(propertiesFile)
 
-  def main(args: Array[String]): Unit = {
+
 
     implicit val system = ActorSystem("TrainerGateway")
     implicit val materializer = ActorMaterializer()
     import TrainerActor._
     import system.dispatcher
-    implicit val defaultTimeout = Timeout(300 seconds)
+    implicit val defaultTimeout = Timeout(3000 seconds)
 
     val trainerActor = system.actorOf(Props[TrainerActor], "TRainerActor")
 
     log.info("Starting actorSystem "+this.getClass().getPackage().getImplementationVersion())
 
     val trainerServerRoute =
-      path("api" / "trainer") {
-
+      path("api" / "train") {
         parameters(
           'path.as[String],
           'iterations.as[Int],
@@ -81,7 +93,22 @@ object TrainerGateway {
                 responseOption
               )
             }
-
+            complete(entityFuture)
+          }
+        }
+      } ~
+      path("api" / "apply") {
+        parameters()
+        {
+          post {
+            val trainerResponseFuture = (trainerActor ? ApplyRequest)
+              .mapTo[String]
+            val entityFuture = trainerResponseFuture.map { responseOption =>
+              HttpEntity(
+                ContentTypes.`text/plain(UTF-8)`,
+                responseOption
+              )
+            }
             complete(entityFuture)
           }
         }
@@ -91,10 +118,16 @@ object TrainerGateway {
 
     Http().bindAndHandle(trainerServerRoute, "0.0.0.0", port)
     log.info("Trainer Gateway started to listen on port " + port)
-  }
+
 }
 
 trait TrainRequestJsonProtocol extends DefaultJsonProtocol {
   import TrainerActor._
   implicit val requestFormat = jsonFormat3(TrainRequest)
+}
+
+object Main {
+  def main(args: Array[String]): Unit = {
+   val trainer = new TrainerGateway
+  }
 }
