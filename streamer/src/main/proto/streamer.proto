@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package com.dyptan;
+
+option java_multiple_files = true;
+option java_package = "com.dyptan.gen.proto";
+
+
+// The greeting service definition.
+service StreamerGateway {
+  // Sends a greeting
+  rpc ApplyNewModel (ApplyRequest) returns (StatusReply) {}
+}
+
+// The request message containing the user's name.
+message ApplyRequest {
+  string path = 1;
+}
+
+// The response message containing the greetings
+message StatusReply {
+  string reply = 1;
+}
