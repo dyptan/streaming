@@ -1,8 +1,6 @@
 package com.dyptan;
 
-import com.dyptan.gen.proto.ApplyRequest;
-import com.dyptan.gen.proto.StatusReply;
-import com.dyptan.gen.proto.StreamerGatewayGrpc;
+import com.dyptan.gen.proto.*;
 import io.grpc.stub.StreamObserver;
 import org.apache.log4j.Logger;
 
@@ -19,37 +17,49 @@ public class StreamGateway extends StreamerGatewayGrpc.StreamerGatewayImplBase {
         logger.info("Stopping Streamer with Id: "+transformer.id);
         detatchedTransformer.interrupt();
         logger.info("Streamer with Id: "+transformer.id+" applied new model.");
-        init(request.getPath());
-
-        StatusReply status = StatusReply.newBuilder().setReply("Model applied").build();
+        StatusReply status;
+        if (init(request.getPath())){
+            status = StatusReply.newBuilder().setStatus(200).setMessage("New model applied: "+request.getPath()).build();
+        } else {
+            status = StatusReply.newBuilder().setStatus(404).setMessage("Model does not exist: "+request.getPath()).build();
+        }
         responseObserver.onNext(status);
         responseObserver.onCompleted();
     }
 
-    public static void init(String modelPath) {
-        while (Files.notExists(Paths.get(modelPath))){
-            try {
-                Thread.sleep(1000);
-                logger.warn("No model found in "+modelPath);
+    @Override
+    public void modelMetadata(MetadataRequest request, StreamObserver<MetadataReply> responseObserver) {
+        MetadataReply metadataReply = MetadataReply
+                .newBuilder()
+                .setOwner("ivan")
+                .setPath(transformer.MODEL_NAME)
+                .build();
+        responseObserver.onNext(metadataReply);
+        responseObserver.onCompleted();
+    }
 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+    public static boolean init(String newModelName) {
+        if (Files.notExists(Paths.get(transformer.MODEL_PATH+newModelName))) {
+             logger.error("Model does not exist: "+transformer.MODEL_PATH+newModelName);
+             return false;
         }
 
         transformer = new StreamTransformer(1);
-        transformer.applyNewModel(modelPath);
+        transformer.applyNewModel(newModelName);
 
         detatchedTransformer = new Thread(transformer);
         detatchedTransformer.start();
+
+        logger.info("New model deployed: "+transformer.MODEL_PATH+transformer.MODEL_NAME);
+        return true;
     }
 
     public static void init(){
         transformer = new StreamTransformer(1);
-        while (Files.notExists(Paths.get(transformer.MODEL_PATH))){
+        while (Files.notExists(Paths.get(transformer.MODEL_PATH+transformer.MODEL_NAME))){
             try {
                 Thread.sleep(1000);
-                logger.warn("No model found in "+transformer.MODEL_PATH);
+                logger.error("No model found in "+transformer.MODEL_PATH+transformer.MODEL_NAME);
 
             } catch (InterruptedException e) {
                 e.printStackTrace();

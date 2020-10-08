@@ -2,7 +2,6 @@ package com.dyptan
 
 import java.io.InputStream
 import java.util.Properties
-import java.util.logging.Logger
 
 import akka.actor.{Actor, ActorLogging, ActorSystem, Props}
 import akka.http.scaladsl.Http
@@ -17,11 +16,13 @@ import scala.concurrent.duration._
 
 object TrainerActor {
   case class TrainRequest(trainingDataSetPath: String, limit: Int, iterations: Int)
-  case class ApplyRequest(path: String)
+  case class SaveRequest(name: String)
 }
 
 class TrainerActor extends Actor with ActorLogging {
+
   import TrainerActor._
+
   val trainer = new Trainer
 
   override def receive: Receive = readyToTrain()
@@ -32,39 +33,40 @@ class TrainerActor extends Actor with ActorLogging {
 
       trainer.setSource(new java.net.URL(path), limit, iterations)
       trainer.train()
+
       log.info(s"Training completed")
 
       sender() ! trainer.evaluate()
-      context.become(readyToApply(), false)
-      }
+      context.become(readyToApply())
+  }
 
   def readyToApply(): Receive = {
-    case ApplyRequest(path) =>
+    case SaveRequest(name) =>
       log.info("Applying model...")
-      try { trainer.save(path)
+      try {
+        trainer.save(name)
       } catch {
-        case e: Throwable => sender() ! e.toString()
+        case e: Throwable => e.toString()
       }
-      log.info(s"New model saved to "+path)
+
+      log.info(s"New model name is: " + name)
 
       sender() ! "true"
       context.unbecome()
   }
+
 }
 
 class TrainerGateway {
 
-//  import org.slf4j.Logger
   import org.slf4j.LoggerFactory
   val log = LoggerFactory.getLogger(classOf[TrainerGateway])
 
-  val propertiesFile: InputStream = getClass.getClassLoader.getResourceAsStream("conf/application.properties")
+  val propertiesFile: InputStream = getClass.getClassLoader.getResourceAsStream("trainer.properties")
   val properties = new Properties()
   // does not work with relative path
-//  val source = Source.fromFile("conf/application.properties")
+//  val source = Source.fromFile("conf/trainer.properties")
   properties.load(propertiesFile)
-
-
 
     implicit val system = ActorSystem("TrainerGateway")
     implicit val materializer = ActorMaterializer()
@@ -97,11 +99,11 @@ class TrainerGateway {
           }
         }
       } ~
-      path("api" / "apply") {
-        parameters()
-        {
+      path("api" / "save") {
+        parameters('name.as[String])
+        { (name: String) =>
           post {
-            val trainerResponseFuture = (trainerActor ? ApplyRequest)
+            val trainerResponseFuture = (trainerActor ? SaveRequest(name))
               .mapTo[String]
             val entityFuture = trainerResponseFuture.map { responseOption =>
               HttpEntity(
@@ -126,7 +128,7 @@ trait TrainRequestJsonProtocol extends DefaultJsonProtocol {
   implicit val requestFormat = jsonFormat3(TrainRequest)
 }
 
-object Main {
+object TrainerLauncher {
   def main(args: Array[String]): Unit = {
    val trainer = new TrainerGateway
   }

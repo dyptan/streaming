@@ -1,6 +1,7 @@
 
 package com.dyptan;
 
+import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
@@ -20,26 +21,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-//import java.util.logging.Logger;
-
 import static scala.collection.JavaConversions.mapAsScalaMap;
 
 public class Trainer {
-    private static final Logger logger = LoggerFactory.getLogger(Trainer.class.getName());
+    private static final Logger logger = Logger.getLogger(Trainer.class.getName());
 
     private PipelineModel pipelineModel = null;
     public SparkSession spark = null;
     private Map<String, String> ES_CONFIG = new HashMap<String, String>();
-    private String MODEL_PATH;
     private Dataset<Row>[] splitDF = null;
     private Properties prop = new Properties();
 
     public Trainer() throws IOException {
 
         InputStream properties = getClass().getClassLoader()
-                .getResourceAsStream("conf/application.properties");
+                .getResourceAsStream("trainer.properties");
 
         prop.load(properties);
 
@@ -108,7 +104,7 @@ public class Trainer {
 
         // Choosing a Model
         LinearRegression linearRegression = new LinearRegression();
-        linearRegression.setMaxIter(Integer.valueOf(ES_CONFIG.getOrDefault("ml.iterations", "1000")));
+        linearRegression.setMaxIter(Integer.valueOf(ES_CONFIG.getOrDefault("ml.iterations", "100")));
 
         Pipeline pipeline = new Pipeline()
                 .setStages(new PipelineStage[] {
@@ -144,12 +140,11 @@ public class Trainer {
         return String.format("R2 = %s \n RMSE = %s", r2, rmse);
     }
 
-    public void save(String path) throws IOException {
-        //Saving model to disk
-        MODEL_PATH = path;
-            logger.warn("Saving to "+MODEL_PATH);
-            pipelineModel.write().overwrite().save(MODEL_PATH);
+    public void save(String name) throws IOException {
+       String MODEL_PATH = prop.getProperty("model.path");
+        logger.info("Saving to "+MODEL_PATH);
+            pipelineModel.write().overwrite().save(MODEL_PATH+name);
 
-            logger.info("Model successfully saved to "+MODEL_PATH);
+        logger.info("Model "+name+" successfully saved to "+MODEL_PATH);
     }
 }

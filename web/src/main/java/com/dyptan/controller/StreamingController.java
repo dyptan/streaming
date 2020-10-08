@@ -1,11 +1,14 @@
 package com.dyptan.controller;
 
+import com.dyptan.gen.proto.*;
 import com.dyptan.model.Car;
 import com.dyptan.model.Filter;
 
+import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -22,6 +25,7 @@ import reactor.core.publisher.Flux;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
@@ -40,12 +44,14 @@ public class StreamingController {
     (value="${trainer.endpoint}")
     private String trainerEndpoint;
 
-    WebClient webclient;
     private Query query = new Query();
 
     public StreamingController(ReactiveMongoTemplate mongoTemplate) throws IOException {
         this.mongoTemplate = mongoTemplate;
     }
+
+    @GrpcClient("streamerGateway")
+    private StreamerGatewayGrpc.StreamerGatewayBlockingStub streamerGatewayBlockingStub;
 
     @GetMapping("/stream")
     public String stream() {
@@ -102,10 +108,14 @@ public class StreamingController {
 
 
     @GetMapping("/trainmodel")
-    public String model() {
+    public String model(final Model model) {
+        MetadataReply metadataReply = streamerGatewayBlockingStub.modelMetadata(MetadataRequest.newBuilder().build());
+        model.addAttribute("currentModelDeployed", metadataReply.getPath());
         return "trainmodel";
     }
 
+
+    WebClient webclient;
 
     @PostMapping("/trainmodel")
     public String train(
@@ -129,22 +139,43 @@ public class StreamingController {
         return "trainmodel";
         }
 
-        @PostMapping("/applymodel")
-        public String apply(
-                Model model){
-        log.info("Apply model received");
+        @PostMapping("/savemodel")
+        public String save(
+                @RequestParam(name = "newmodelname") String newModelName,
+                Model model,
+                HttpServletRequest request){
+        log.info("Save model requested.");
             String response = webclient.post()
                     .uri(uriBuilder -> uriBuilder
-                    .path("/apply")
+                    .queryParam("name", newModelName)
+                    .path("/save")
                     .build()
                     )
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
 
-            model.addAttribute("modelApplied", response);
+
+            request.getSession().setAttribute("newModelName" , newModelName);
+            model.addAttribute("modelSaved", response);
 
             return "trainmodel";
         }
+
+
+        @PostMapping("/deploymodel")
+        public String apply(
+                Model model,
+                HttpServletRequest request){
+            log.info("Apply model received");
+            String newModelName = (String) request.getSession().getAttribute("newModelName");
+            StatusReply response = streamerGatewayBlockingStub.applyNewModel(ApplyRequest.newBuilder().setPath(newModelName).build());
+
+            model.addAttribute("DeployStatus", response.getStatus());
+            model.addAttribute("DeployMessage", response.getMessage());
+
+            return "trainmodel";
+        }
+
 
 }

@@ -1,6 +1,7 @@
 package com.dyptan;
 
 import com.mongodb.spark.MongoSpark;
+import org.apache.hadoop.mapred.InvalidInputException;
 import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.function.VoidFunction2;
@@ -42,6 +43,7 @@ public class StreamTransformer implements  Runnable{
     private String KAFKA_BOOTSTRAP_SERVER;
     private String KAFKA_TOPIC;
     String MODEL_PATH;
+    String MODEL_NAME;
     private SparkSession spark;
     public StreamingQuery query = null;
     public int id;
@@ -53,7 +55,7 @@ public class StreamTransformer implements  Runnable{
 
 
         InputStream sparkDefaults = getClass().getClassLoader()
-                .getResourceAsStream("conf/application.properties");
+                .getResourceAsStream("streamer.properties");
 
         Properties STREAM_CONFIG = new Properties();
         try {
@@ -65,9 +67,12 @@ public class StreamTransformer implements  Runnable{
 //      Setting up Stream properties
 
         KAFKA_BOOTSTRAP_SERVER = STREAM_CONFIG.getProperty("source.kafka.bootstrap.server", "kafka:9092");
-        KAFKA_TOPIC = STREAM_CONFIG.getProperty("source.kafka.topic", "olx");
-        MODEL_PATH = STREAM_CONFIG.getProperty("model.load.path", "/tmp/trainedmodel");
+        KAFKA_TOPIC = STREAM_CONFIG.getProperty("source.kafka.topic");
+        MODEL_PATH = STREAM_CONFIG.getProperty("model.path");
 
+
+        if (MODEL_NAME==null) MODEL_NAME="trainedModel";
+        if (KAFKA_TOPIC == null | MODEL_PATH == null) throw new RuntimeException("configuration not found");
 //      Converting Java Properties to SparkConf
 
         Map<String, String> scalaProps = new HashMap<>();
@@ -112,7 +117,7 @@ public class StreamTransformer implements  Runnable{
                 col("published")
         );
 
-        PipelineModel pipelineModel = PipelineModel.load(MODEL_PATH);
+        PipelineModel pipelineModel = PipelineModel.load(MODEL_PATH.concat(MODEL_NAME));
 
         Dataset<Row> streamPredictionsDF = pipelineModel.transform(structuredStream);
 
@@ -137,8 +142,8 @@ public class StreamTransformer implements  Runnable{
 
     }
 
-    public void applyNewModel(String newModelPath) {
-        MODEL_PATH = newModelPath;
+    public void applyNewModel(String name) {
+        MODEL_NAME = name;
     }
 
 

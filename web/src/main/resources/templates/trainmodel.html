@@ -8,6 +8,9 @@
 <body>
 <a href="/home">Home</a><br>
 
+Current model is:
+<h5 th:text=${currentModelDeployed}></h5>
+
 Training dataset location:
 <form action="/trainmodel" method="post">
     <input name="trainingDataSetPath" th:value="'http://'+
@@ -21,17 +24,36 @@ Training dataset location:
     <input type="submit" value="Train new model">
 </form>
 
+
+
 <div th:if="${modelTrained!=null}">Model successfully trained and evaluated:
-    <h5 th:text=${modelTrained}>Status</h5>
+    <h5 th:text=${modelTrained}></h5>
 
     <div>
-    <form action="/applymodel" method="post">
-    <input type="submit" value="Save and Deploy">
-    </form>
+        <form action="/savemodel" method="post">
+            New model name:
+            <input name="newmodelname" type="text" value="model_name"><br>
+            <input type="submit" value="Save">
+        </form>
     </div>
 </div>
 
-<div th:if="${modelApplied=='true'}">Model successfully saved and deployed</div>
+<div th:if="${modelSaved=='true'}">Model successfully saved
+    <div>
+        <form action="/deploymodel" method="post">
+            Deploy new model:
+            <input type="submit" value="Deploy">
+        </form>
+    </div>
+</div>
+
+<div th:if="${DeployStatus==200}">Model has been successfully deployed!
+    <h5 th:text=${DeployMessage}></h5>
+</div>
+
+<div th:if="${DeployStatus==404}">Something went wrong! Model is not deployed.
+    <h5 th:text=${DeployMessage}></h5>
+</div>
 
 </body>
 </html>
